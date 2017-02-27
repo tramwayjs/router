@@ -112,7 +112,7 @@ Much of the logic behind this process can be abstracted, such that if you alread
 
 Here's a sample `RestfulRouter` implementation.
 ```
-import {controllers} from 'tramway-core';
+import {controllers} from 'tramway-core-router';
 import TestModel from '../models/TestModel';
 let {RestfulController} = controllers;
 
