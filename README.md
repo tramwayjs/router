@@ -84,7 +84,7 @@ The Router will be called in your main server file where you create your Express
 Here's an example usage among parts of an express server file:
 ```
 import express from 'express';
-import {Router} from 'tramway-core';
+import {Router} from 'tramway-core-router';
 import routes from './routes/routes.js';
 
 const PORT = 8080;
@@ -144,7 +144,7 @@ Policies let you regulate routing for authentication or permissions-based reason
 
 To write an authentication policy, import the class and implement the stubs.
 ```
-import {policies} from 'tramway-core';
+import {policies} from 'tramway-core-router';
 let {AuthenticationStrategy} = policies;
 ```
 
