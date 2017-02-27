@@ -1,0 +1,6 @@
+node_modules/
+core/**/*.js
+core/**/*.js.map
+/index.js
+*.js.map
+/test.js
