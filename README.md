@@ -105,6 +105,23 @@ The router also exposes some static methods which can be used across your app wi
 ## Controllers
 Controllers link to actions from the routing and act to direct the flow of the application.
 
+To create a controller, import the class and implement a derived class with static functions for each route.
+```
+import {Controller} from 'tramway-core'; 
+```
+*Sample Controller action signature:*
+```
+static index(req, res) {}
+```
+`req` and `res` represent the respective objects passed by your router. With Express the request and response objects are passed by default.
+
+The Controller class also contains some helper functions that can be used by any child Controller - including RestfulController.
+
+| Function | Usage |
+| --- | --- |
+| ```getRouter(): Router``` | Returns the Router class for extendability |
+| ```redirect(res: Object, path: string, status: number)``` | Calls the main redirect function in Express. |
+
 ### Restful Controllers
 If you're just writing a Restful API, it can rapidly become tedious and messy when you end up creating each part of the CRUD structure and register each route. 
 
