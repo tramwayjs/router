@@ -1,5 +1,6 @@
 import Router from './Router';
-import AbstractMethodError from './errors/AbstractMethodError';
+import {errors} from 'tramway-core';
+let {AbstractMethodError} = errors;
 
 /**
  * @class Controller
