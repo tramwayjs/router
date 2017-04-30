@@ -1,4 +1,5 @@
-import {Controller, Model} from 'tramway-core';
+import Controller from "../Controller";
+import {Model} from 'tramway-core';
 
 /**
  * @export

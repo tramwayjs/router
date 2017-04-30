@@ -42,29 +42,44 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         }
     ));
 
-    describe("Should return an object for errors.", function(){
-        it("Should return an object for errors.", function(){
-            assert.strictEqual(typeof lib.errors, "object");
-        });
+    describe("Should return a proper 'Controller' class", describeCoreClass(
+        lib.Controller,
+        "Controller", 
+        ["index"],
+        ["getRouter", "redirect"],
+        function(testClass, testInstance, classFunctions, instanceFunctions) {
+            describe("The 'index' function should have the same signature", describeFunction(
+                testClass["index"], 
+                ["res", "req", "next"]
+            ));
+            describe("The 'getRouter' function should have the same signature", describeFunction(
+                testInstance["getRouter"],
+                []
+            ));
+            describe("The 'redirect' function should have the same signature", describeFunction(
+                testInstance["redirect"],
+                ["res", "path", "status"]
+            ));
+        }
+    ));
 
-        // it("There should be the same errors as in the previous version", function(){
-        //     assert.deepEqual(Object.keys(lib.errors), ["AbstractMethodError", "WrongTypeError"]);
-        // });
+    // describe("Should return an object for errors.", function(){
+    //     it("Should return an object for errors.", function(){
+    //         assert.strictEqual(typeof lib.errors, "object");
+    //     });
 
-        // describe("Should return a proper 'WrongTypeError' class", describeCoreClass(
-        //     lib.errors.WrongTypeError, 
-        //     "WrongTypeError", 
-        //     [],
-        //     []     
-        // ));
+    //     it("There should be the same errors as in the previous version", function(){
+    //         assert.deepEqual(Object.keys(lib.errors), ["AbstractMethodError"]);
+    //     });
 
-        // describe("Should return a proper 'AbstractMethodError' class", describeCoreClass(
-        //     lib.errors.AbstractMethodError, 
-        //     "AbstractMethodError", 
-        //     [],
-        //     []     
-        // ));
-    });
+    //     describe("Should return a proper 'AbstractMethodError' class", describeCoreClass(
+    //         lib.errors.AbstractMethodError, 
+    //         "AbstractMethodError", 
+    //         [],
+    //         []     
+    //     ));
+    // });
+
     describe("Should return an object for controllers.", function(){
         it("Should return an object for controllers.", function(){
             assert.strictEqual(typeof lib.controllers, "object");
