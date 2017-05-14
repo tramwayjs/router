@@ -9,7 +9,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         lib.Router, 
         "Router", 
         ["buildPath", "buildQuery"],
-        ["initialize", "prepareRoute", "useMethod", "preparePath", "prepareArguments"],
+        ["initialize"],
         function(testClass, testInstance, classFunctions, instanceFunctions) {
             describe("The 'buildPath' function should have the same signature", describeFunction(
                 testClass["buildPath"], 
@@ -22,22 +22,6 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             describe("The 'initialize' function should have the same signature", describeFunction(
                 testInstance["initialize"], 
                 []
-            ));
-            describe("The 'prepareRoute' function should have the same signature", describeFunction(
-                testInstance["prepareRoute"], 
-                ["route"]
-            ));
-            describe("The 'useMethod' function should have the same signature", describeFunction(
-                testInstance["useMethod"], 
-                ["method", "path", "cb"]
-            ));
-            describe("The 'preparePath' function should have the same signature", describeFunction(
-                testInstance["preparePath"], 
-                ["route"]
-            ));
-            describe("The 'prepareArguments' function should have the same signature", describeFunction(
-                testInstance["prepareArguments"], 
-                ["params"]
             ));
         }
     ));
@@ -59,6 +43,23 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             describe("The 'redirect' function should have the same signature", describeFunction(
                 testInstance["redirect"],
                 ["res", "path", "status"]
+            ));
+        }
+    ));
+
+    describe("Should return a proper 'RouterStrategy' class", describeCoreClass(
+        lib.RouterStrategy,
+        "RouterStrategy", 
+        [],
+        ["prepareRoutes", "prepareRoute"],
+        function(testClass, testInstance, classFunctions, instanceFunctions) {
+            describe("The 'prepareRoutes' function should have the same signature", describeFunction(
+                testInstance["prepareRoutes"], 
+                ["routes"]
+            ));
+            describe("The 'prepareRoute' function should have the same signature", describeFunction(
+                testInstance["prepareRoute"], 
+                ["route"]
             ));
         }
     ));
@@ -126,6 +127,44 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
                         args
                     ));
                 });
+            }
+        ));
+    });
+    describe("Should return an object for strategies.", function(){
+        it("Should return an object for strategies.", function(){
+            assert.strictEqual(typeof lib.strategies, "object");
+        });
+
+        it("There should the same number of strategies types as the previous version", function(){
+            assert.strictEqual(Object.keys(lib.strategies).length, 1);
+        });
+
+        describe("Should return a proper 'ExpressServerStrategy' class", describeCoreClass(
+            lib.strategies.ExpressServerStrategy, 
+            "ExpressServerStrategy", 
+            [],
+            ["prepareRoutes", "prepareRoute", "useMethod", "preparePath", "prepareArguments"],
+            function(testClass, testInstance, classFunctions, instanceFunctions) {
+                describe("The 'prepareRoutes' function should have the same signature", describeFunction(
+                    testInstance["prepareRoutes"], 
+                    ["routes"]
+                ));
+                describe("The 'prepareRoute' function should have the same signature", describeFunction(
+                    testInstance["prepareRoute"], 
+                    ["route"]
+                ));
+                describe("The 'useMethod' function should have the same signature", describeFunction(
+                    testInstance["useMethod"], 
+                    ["method", "path", "cb"]
+                ));
+                describe("The 'preparePath' function should have the same signature", describeFunction(
+                    testInstance["preparePath"], 
+                    ["route"]
+                ));
+                describe("The 'prepareArguments' function should have the same signature", describeFunction(
+                    testInstance["prepareArguments"], 
+                    ["params"]
+                ));
             }
         ));
     });
