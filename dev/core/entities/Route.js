@@ -59,8 +59,8 @@ export default class Route extends Entity {
      * 
      * @memberOf Route
      */
-    setArguments(args) {
-        this.arguments = args || "";
+    setArguments(args = "") {
+        this.arguments = args;
         return this;
     }
 
@@ -79,8 +79,8 @@ export default class Route extends Entity {
      * 
      * @memberOf Route
      */
-    setMethods(methods) {
-        this.methods = methods || ['get'];
+    setMethods(methods = ["get"]) {
+        this.methods = methods;
         return this;
     }
 
