@@ -4,6 +4,7 @@ Tramway is a simple router for the tramway framework. It includes:
 2. Restful routes to save time building APIs
 3. Authentication policies that allow for multiple strategies to be used and interchanged without needing the logic throughout the code.
 and so much more.
+4. Swappable router strategies that keep your app consistent no matter which solution you use, server or server-less.
 
 # Installation:
 1. `npm install tramway-core-router`
@@ -84,13 +85,14 @@ The Router will be called in your main server file where you create your Express
 Here's an example usage among parts of an express server file:
 ```
 import express from 'express';
-import {Router} from 'tramway-core-router';
+import {Router, strategies} from 'tramway-core-router';
 import routes from './routes/routes.js';
 
 const PORT = 8080;
 
 let app = express();
-let router = new Router(app, routes);
+let {ExpressServerStrategy} = strategies;
+let router = new Router(routes, new ExpressServerStrategy(app));
 app = router.initialize();
 app.listen(PORT);
 ```
@@ -101,6 +103,24 @@ The router also exposes some static methods which can be used across your app wi
 | --- | --- | --- |
 | ```buildPath(...string): string``` | ```"a/b/c" === Router.buildPath("a", "b", "c")``` | Returns a clean path given any number of strings. |
 | ```buildQuery(params: Object): string``` | ```"a=1&b=2&c=true" === Router.buildQuery({"a": 1, "b": 2, "c": true})``` | Returns a query string for any associative object |
+
+### Strategies
+The biggest addition is strategies which helps keep your apps consistent across clients and servers and also aid in keeping your app framework agnostic by adapting a consistent format across multiple router types which can be plug and play.
+
+The strategy that comes with this package is the `ExpressServerStrategy` which binds the pre-configured routes to the initialized Express app at application start. If you wanted to use React Router on the client side, strategies aid in adapting such that only a piece of the router needs to be replaced.
+
+All strategies must extend the `RouterStrategy` class and implement the `prepareRoute` function (and optionally override the `prepareRoutes` function).
+
+```
+import {RouterStrategy} from 'tramway-core-router';
+
+export default MyRouterStrategy extends RouterStrategy {
+    // Takes a Route or RestfulRoute entity found in {entities}.
+    prepareRoute(route) {
+        //adapt route to your app's routing
+    }
+}
+```
 
 ## Controllers
 Controllers link to actions from the routing and act to direct the flow of the application.
