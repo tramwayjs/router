@@ -64,22 +64,21 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         }
     ));
 
-    // describe("Should return an object for errors.", function(){
-    //     it("Should return an object for errors.", function(){
-    //         assert.strictEqual(typeof lib.errors, "object");
-    //     });
-
-    //     it("There should be the same errors as in the previous version", function(){
-    //         assert.deepEqual(Object.keys(lib.errors), ["AbstractMethodError"]);
-    //     });
-
-    //     describe("Should return a proper 'AbstractMethodError' class", describeCoreClass(
-    //         lib.errors.AbstractMethodError, 
-    //         "AbstractMethodError", 
-    //         [],
-    //         []     
-    //     ));
-    // });
+    describe("Should return a proper 'Authentication' class", describeCoreClass(
+        lib.Authentication,
+        "Authentication", 
+        [],
+        ["login", "logout", "check", "getStrategy"],
+        function(testClass, testInstance, classFunctions, instanceFunctions) {
+            instanceFunctions.forEach(function(func){
+                var args = func === "getStrategy" ? [] : ["cb"];
+                describe("The '" + func + "' function should have the same signature", describeFunction(
+                    testInstance[func], 
+                    args
+                ));
+            });
+        }
+    ));
 
     describe("Should return an object for controllers.", function(){
         it("Should return an object for controllers.", function(){
