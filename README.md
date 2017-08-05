@@ -107,8 +107,6 @@ The router also exposes some static methods which can be used across your app wi
 ### Strategies
 The biggest addition is strategies which helps keep your apps consistent across clients and servers and also aid in keeping your app framework agnostic by adapting a consistent format across multiple router types which can be plug and play.
 
-The strategy that comes with this package is the `ExpressServerStrategy` which binds the pre-configured routes to the initialized Express app at application start. If you wanted to use React Router on the client side, strategies aid in adapting such that only a piece of the router needs to be replaced.
-
 All strategies must extend the `RouterStrategy` class and implement the `prepareRoute` function (and optionally override the `prepareRoutes` function).
 
 ```
@@ -121,6 +119,16 @@ export default MyRouterStrategy extends RouterStrategy {
     }
 }
 ```
+
+#### ExpressServerStrategy
+The strategy that comes with this package is the `ExpressServerStrategy` which binds the pre-configured routes to the initialized Express app at application start. If you wanted to use React Router on the client side, strategies aid in adapting such that only a piece of the router needs to be replaced.
+
+It takes the following arguments in the constructor:
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| app | | The instantiated Express app |
+| SecurityClass | `Security` | The Security middleware to apply to routes and handle authentication with. It will always return an Express RouteHandler ```function(req, res, next)```. By default, the `ExpressServerStrategy` uses the default `Security` class but this parameter allows it to be overriden in cases where authentication is handled by a third party. |
 
 ## Controllers
 Controllers link to actions from the routing and act to direct the flow of the application.

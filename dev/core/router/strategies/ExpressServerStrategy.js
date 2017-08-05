@@ -9,9 +9,10 @@ export default class ExpressServerStrategy extends RouterStrategy {
      * 
      * @memberOf ExpressServerStrategy
      */
-    constructor(app){
+    constructor(app, SecurityClass = Security){
         super();
         this.app = app;
+        this.SecurityClass = SecurityClass;
     }
 
     /**
@@ -32,7 +33,7 @@ export default class ExpressServerStrategy extends RouterStrategy {
         route.getMethods().forEach(function(method){
             let path = this.preparePath(route);
             if (route.getPolicy()) {
-                this.useMethod(method, path, new Security(route.getPolicy()), route.getController());
+                this.useMethod(method, path, new this.SecurityClass(route.getPolicy()), route.getController());
             } else {
                 this.useMethod(method, path, route.getController());
             }
