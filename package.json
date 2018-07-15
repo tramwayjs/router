@@ -19,7 +19,8 @@
   },
   "devDependencies": {
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
-    "babel-preset-es2015-node6": "^0.3.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015-node6": "^0.4.0",
     "gulp": "~3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-sourcemaps": "~1.9.1",

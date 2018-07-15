@@ -16,30 +16,9 @@ export default class RestfulRoute extends Route {
      */
     constructor(route) {
         super(route);
-        this.setControllerClass(route.controllerClass);
-    }
-
-    /**
-     * @returns {Model}
-     * 
-     * @memberOf RestfulRoute
-     */
-    getControllerClass() {
-        return this.controllerClass;
-    }
-
-    /**
-     * @param {Model} controllerClass
-     * @returns {RestfulRoute}
-     * 
-     * @memberOf RestfulRoute
-     */
-    setControllerClass(controllerClass) {
-        this.controllerClass = controllerClass;
-        return this;
     }
 
     isRestful() {
-        return this.controllerClass instanceof RestfulController;
+        return this.controller instanceof RestfulController;
     }
 }

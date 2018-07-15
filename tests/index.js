@@ -29,11 +29,11 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
     describe("Should return a proper 'Controller' class", describeCoreClass(
         lib.Controller,
         "Controller", 
-        ["index"],
-        ["getRouter", "redirect"],
+        [],
+        ["index", "getRouter", "redirect"],
         function(testClass, testInstance, classFunctions, instanceFunctions) {
             describe("The 'index' function should have the same signature", describeFunction(
-                testClass["index"], 
+                testInstance["index"], 
                 ["res", "req", "next"]
             ));
             describe("The 'getRouter' function should have the same signature", describeFunction(
@@ -71,7 +71,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         ["login", "logout", "check", "getStrategy"],
         function(testClass, testInstance, classFunctions, instanceFunctions) {
             instanceFunctions.forEach(function(func){
-                var args = func === "getStrategy" ? [] : ["cb"];
+                var args = [];
                 describe("The '" + func + "' function should have the same signature", describeFunction(
                     testInstance[func], 
                     args
@@ -91,14 +91,14 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
 
         describe("Should return a consistent 'RestfulController' class.", describeCoreClass(
             lib.controllers.RestfulController, 
-            "RestfulController", 
-            ['get', 'getAll', 'create', 'update', 'delete'],
+            "RestfulController",
             [],
+            ['getOne', 'get', 'create', 'update', 'replace', 'delete'],
             function(testClass, testInstance, classFunctions, instanceFunctions) {
                 classFunctions.forEach(function(func){
                     describe("The '" + func + "' function should have the same signature", describeFunction(
-                        testClass[func], 
-                        ["model", "req", "res"]
+                        testInstance[func], 
+                        ["req", "res"]
                     ));
                 });
             }
@@ -120,7 +120,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             ["login", "logout", "check", "getRedirectRoute"],
             function(testClass, testInstance, classFunctions, instanceFunctions) {
                 instanceFunctions.forEach(function(func){
-                    var args = func === "getRedirectRoute" ? [] : ["cb"];
+                    var args = [];
                     describe("The '" + func + "' function should have the same signature", describeFunction(
                         testInstance[func], 
                         args
@@ -154,7 +154,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
                 ));
                 describe("The 'useMethod' function should have the same signature", describeFunction(
                     testInstance["useMethod"], 
-                    ["method", "path", "cb"]
+                    ["method", "path", "...middleware"]
                 ));
                 describe("The 'preparePath' function should have the same signature", describeFunction(
                     testInstance["preparePath"], 

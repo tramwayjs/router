@@ -21,11 +21,12 @@ export default class RestfulRouteFactory {
         route = TypeEnforcementService.enforceInstance(route, RestfulRoute);
 
         return [
-            (new Route(route)).setMethods(['get']).setController(route.getControllerClass().get),
-            (new Route(route)).setMethods(['get']).setController(route.getControllerClass().getAll).setArguments(""),
-            (new Route(route)).setMethods(['post']).setController(route.getControllerClass().create).setArguments(""),
-            (new Route(route)).setMethods(['put']).setController(route.getControllerClass().update),
-            (new Route(route)).setMethods(['delete']).setController(route.getControllerClass().delete)
+            (new Route(route)).setMethods(['get']).setAction("getOne"),
+            (new Route(route)).setMethods(['get']).setAction("get").setArguments(""),
+            (new Route(route)).setMethods(['post']).setAction("create").setArguments(""),
+            (new Route(route)).setMethods(['patch']).setAction("update"),
+            (new Route(route)).setMethods(['put']).setAction("replace"),
+            (new Route(route)).setMethods(['delete']).setAction("delete"),
         ];
     }
     

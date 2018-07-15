@@ -13,7 +13,8 @@ gulp.task('build', function() {
         .pipe(sourcemaps.init())
         .pipe(babel({
             "plugins": [
-                "transform-flow-strip-types"
+                "transform-flow-strip-types",
+                "transform-object-rest-spread"
             ],
             "presets": [
                 "es2015-node6"
@@ -32,7 +33,8 @@ gulp.task('distribute', function() {
         .src(DEV_DIRECTORY)
         .pipe(babel({
             "plugins": [
-                "transform-flow-strip-types"
+                "transform-flow-strip-types",
+                "transform-object-rest-spread"
             ],
             "presets": [
                 "es2015-node6"
