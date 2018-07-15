@@ -432,13 +432,13 @@ import {policies} from 'tramway-core-router';
 let {AuthenticationStrategy} = policies;
 ```
 
-**Note: All functions are async functions, callbacks are no longer supported.**
+**Note: All functions are async functions, callbacks are no longer supported, request is passed**
 
 | Function | Usage |
 | --- | --- |
 | ```constructor()``` | Sets a redirect via ```super(redirectRoute: string)``` |
-| ```login()``` | Implements and handles login criteria for the strategy |
-| ```logout()``` | Implements and handles logout criteria for the strategy |
-| ```check()``` | Implements and handles the check on the current status of user with regards to the policy. |
+| ```login(request)``` | Implements and handles login criteria for the strategy |
+| ```logout(request)``` | Implements and handles logout criteria for the strategy |
+| ```check(request)``` | Implements and handles the check on the current status of user with regards to the policy. |
 
 If a policy is indicated with the route, it will call the framework's internal Security service which will return a result based on the check performed by the Authentication service using the Authentication strategy - which uses strategy pattern. It's at this point where the router will redirect with a 401 to the policy's redirect route if the strategy's check criteria fails.

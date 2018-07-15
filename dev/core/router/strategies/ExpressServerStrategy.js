@@ -101,7 +101,6 @@ export default class ExpressServerStrategy extends RouterStrategy {
     }
 
     prepareControllerMiddleware(controller, action) {
-        console.log(controller, action)
         return controller[action];
     }
 }

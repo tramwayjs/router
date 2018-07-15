@@ -20,22 +20,22 @@ export default class Authentication {
     /**
      * @memberOf Authentication
      */
-    async login() {
-        return await this.strategy.login();
+    async login(request) {
+        return await this.strategy.login(request);
     }
 
     /**
      * @memberOf Authentication
      */
-    async logout() {
-        return await this.strategy.logout();
+    async logout(request) {
+        return await this.strategy.logout(request);
     }
 
     /**
      * @memberOf Authentication
      */
-    async check() {
-        return await this.strategy.check();
+    async check(request) {
+        return await this.strategy.check(request);
     }
 
     /**

@@ -21,21 +21,21 @@ export default class AuthenticationStrategy {
      * @throws {Error}
      * @memberOf AuthenticationStrategy
      */
-    async login() {
+    async login(request) {
         throw new AbstractMethodError();
     }
 
     /**
      * @memberOf AuthenticationStrategy
      */
-    async logout(){
+    async logout(request){
         throw new AbstractMethodError();
     }
 
     /**
      * @memberOf AuthenticationStrategy
      */
-    async check(){
+    async check(request){
         throw new AbstractMethodError();
     }
 
