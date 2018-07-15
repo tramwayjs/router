@@ -18,32 +18,24 @@ export default class AuthenticationStrategy {
     }
 
     /**
-     * @param {function(Error, Object)} cb
-     * @returns {function(Error, Object)} cb
-     * 
+     * @throws {Error}
      * @memberOf AuthenticationStrategy
      */
-    login(cb) {
+    async login(request) {
         throw new AbstractMethodError();
     }
 
     /**
-     * @param {function(Error, Object)} cb
-     * @returns {function(Error, Object)} cb
-     * 
      * @memberOf AuthenticationStrategy
      */
-    logout(cb){
+    async logout(request){
         throw new AbstractMethodError();
     }
 
     /**
-     * @param {function(Error, boolean)} cb
-     * @returns {function(Error, boolean)} cb
-     * 
      * @memberOf AuthenticationStrategy
      */
-    check(cb){
+    async check(request){
         throw new AbstractMethodError();
     }
 

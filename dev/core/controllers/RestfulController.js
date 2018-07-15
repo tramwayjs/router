@@ -1,5 +1,5 @@
 import Controller from "../Controller";
-import {Model} from 'tramway-core';
+import { HttpStatus } from "../../index";
 
 /**
  * @export
@@ -7,94 +7,132 @@ import {Model} from 'tramway-core';
  * @extends {Controller}
  */
 export default class RestfulController extends Controller {
-    /**
-     * @static
-     * @param {Model} model
-     * @param {Object} req
-     * @param {Object} res
-     * 
-     * @memberOf RestfulController
-     */
-    static get(model, req, res) {
-        model.get(function(err, item){
-            if (err) {
-                return res.sendStatus(404);
-            }
-            return res.json(item);
-        });
+    constructor(service) {
+        super();
+        this.service = service;
     }
 
     /**
-     * @static
-     * @param {Model} model
+     * @async
      * @param {Object} req
      * @param {Object} res
      * 
      * @memberOf RestfulController
      */
-    static getAll(model, req, res) {
-        let response = function(err, items){
-            if (err) {
-                return res.sendStatus(400);
-            }
-            return res.json(items);
-        };
+    async getOne(req, res) {
+        const {id} = req.params;
+        let item;
 
-        if (Object.keys(req.query).length > 0) {
-            return model.find(req.query, response);
+        try {
+            item = await this.service.getOne(id);
+        } catch(e) {
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
-        return model.getAll(response);
+
+        if (!item) {
+            return res.sendStatus(HttpStatus.NOT_FOUND);
+        }
+
+        return res.json(item);
     }
 
     /**
-     * @static
-     * @param {Model} model
+     * @async
      * @param {Object} req
      * @param {Object} res
      * 
      * @memberOf RestfulController
      */
-    static create(model, req, res) {
-        model.create(function(err, item){
-            if (err) {
-                return res.sendStatus(400);
-            }
-            return res.json(item);
-        });
+    async get(req, res) {
+        let items;
+        let {query} = req;
+
+        try {
+            items = await this.service.get(query);
+        } catch (e) {
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (!items) {
+            return res.sendStatus(HttpStatus.BAD_REQUEST);
+        }
+
+        return res.json(items);
+    }
+
+    /**
+     * @async
+     * @param {Object} req
+     * @param {Object} res
+     * 
+     * @memberOf RestfulController
+     */
+    async create(req, res) {
+        const {body} = req;
+        try {
+            await this.service.create(body)
+        } catch (e) {
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
+        }
+
+        return res.sendStatus(HttpStatus.CREATED);
     }
     
     /**
-     * @static
-     * @param {Model} model
+     * @async
      * @param {Object} req
      * @param {Object} res
      * 
      * @memberOf RestfulController
      */
-    static update(model, req, res) {
-        model.update(function(err, item){
-            if (err) {
-                return res.sendStatus(404);
-            }
-            return res.json(item);
-        });
+    async update(req, res) {
+        const {body, params} = req;
+        const {id} = params;
+
+        try {
+            await this.service.update(id, body);
+        } catch (e) {
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
+        }
+
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
     /**
-     * @static
-     * @param {Model} model
+     * @async
      * @param {Object} req
      * @param {Object} res
      * 
      * @memberOf RestfulController
      */
-    static delete(model, req, res) {
-        model.delete(function(err, item){
-            if (err) {
-                return res.sendStatus(400);
-            }
-            return res.json(item);
-        });
+    async replace(req, res) {
+        const {body, params} = req;
+        const {id} = params;
+
+        try {
+            await this.service.update(id, body);
+        } catch (e) {
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
+        }
+
+        return res.sendStatus(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * @async
+     * @param {Object} req
+     * @param {Object} res
+     * 
+     * @memberOf RestfulController
+     */
+    async delete(req, res) {
+        const {id} = req.params;
+        try {
+            await this.service.delete(id);
+        } catch (e) {
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 }

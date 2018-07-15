@@ -1,5 +1,6 @@
 import Authentication from "./Authentication";
 import AuthenticationStrategy from "./policies/AuthenticationStrategy";
+import { HttpStatus } from "../index";
 
 /**
  * @export
@@ -7,21 +8,21 @@ import AuthenticationStrategy from "./policies/AuthenticationStrategy";
  */
 export default class Security {
     /**
-     * Creates an instance of Security.
-     * @param {AuthenticationStrategy} authenticationPolicy
-     * @return {function(Object, Object, function(Object, Object))}
-     * @memberOf Security
+     * 
+     * @param {AuthenticationStrategy} authenticationPolicy 
      */
-    constructor(authenticationPolicy){
+    generateMiddleware(authenticationPolicy) {
         let authentication = new Authentication(authenticationPolicy);
-        return function authenticate(req, res, next){
-            return authentication.check(function(err, result) {
-                if(err) {
-                    return res.redirect(401, authenticationPolicy.getRedirectRoute());
-                } else {
-                    return next();
-                }
-            });
-        }
+        return async (req, res, next) => {
+            let result;
+            try {
+                result = await authentication.check(req);
+            } catch (e) {
+                return res.redirect(HttpStatus.UNAUTHORIZED, authenticationPolicy.getRedirectRoute());
+            }
+
+            res.locals = result;
+            return next();
+        };
     }
 }
