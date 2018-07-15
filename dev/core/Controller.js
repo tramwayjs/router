@@ -1,4 +1,5 @@
 import {errors} from 'tramway-core';
+import { HttpStatus } from '../index';
 let {AbstractMethodError} = errors;
 
 /**
@@ -43,6 +44,7 @@ export default class Controller {
      * @memberOf Controller
      */
     redirect(res, path, status) {
+        status = status || HttpStatus.MOVED_PERMANENTLY;
         return res.redirect(status, path);
     }
 }
