@@ -71,7 +71,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         ["login", "logout", "check", "getStrategy"],
         function(testClass, testInstance, classFunctions, instanceFunctions) {
             instanceFunctions.forEach(function(func){
-                var args = [];
+                var args = func === "getStrategy" ? [] : ["request"];
                 describe("The '" + func + "' function should have the same signature", describeFunction(
                     testInstance[func], 
                     args
@@ -120,7 +120,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             ["login", "logout", "check", "getRedirectRoute"],
             function(testClass, testInstance, classFunctions, instanceFunctions) {
                 instanceFunctions.forEach(function(func){
-                    var args = [];
+                    var args = func === "getRedirectRoute" ? [] : ["request"];
                     describe("The '" + func + "' function should have the same signature", describeFunction(
                         testInstance[func], 
                         args

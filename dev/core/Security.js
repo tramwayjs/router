@@ -1,5 +1,6 @@
 import Authentication from "./Authentication";
 import AuthenticationStrategy from "./policies/AuthenticationStrategy";
+import { HttpStatus } from "../index";
 
 /**
  * @export
@@ -13,11 +14,14 @@ export default class Security {
     generateMiddleware(authenticationPolicy) {
         let authentication = new Authentication(authenticationPolicy);
         return async (req, res, next) => {
+            let result;
             try {
-                await authentication.check();
+                result = await authentication.check(req);
             } catch (e) {
-                return res.redirect(401, authenticationPolicy.getRedirectRoute());
+                return res.redirect(HttpStatus.UNAUTHORIZED, authenticationPolicy.getRedirectRoute());
             }
+
+            res.locals = result;
             return next();
         };
     }
