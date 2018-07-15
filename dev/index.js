@@ -8,4 +8,13 @@ import * as entities from './core/entities';
 import * as policies from './core/policies';
 import * as strategies from './core/router/strategies';
 
-export {Router, Controller, Authentication, RouterStrategy, controllers, entities, policies, strategies};
+export {
+    Router, 
+    Controller, 
+    Authentication, 
+    RouterStrategy, 
+    controllers, 
+    entities, 
+    policies, 
+    strategies,
+};

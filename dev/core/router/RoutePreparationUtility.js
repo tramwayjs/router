@@ -8,19 +8,26 @@ export default class RoutePreparationUtility {
     /**
      * @static
      * @param {Object[]} routes
+     * @param {DependencyResolver} resolver DependencyResolver for DI
      * @returns {Route[]}
      * 
      * @memberOf RoutePreparationTemplate
      */
-    static convertToUniformRoutes(routes) {
+    static convertToUniformRoutes(routes, resolver) {
         return routes
             .map((route) => {
+                if (resolver && 'string' === typeof route.controller) {
+                    route.controller = resolver.getService(route.controller);
+                }
+
+                if (resolver && 'string' === typeof route.policy) {
+                    route.policy = resolver.getService(route.policy);
+                }
+
                 if (RestfulRoutePreparationUtility.isRestfulRoute(route)) {
                     return RestfulRoutePreparationUtility.convertRestfulRoute(new RestfulRoute(route));
                 } 
                 return [new Route(route)];
             }).reduce((a, b) => a.concat(b));
-    }  
-
-    
+    }
 }

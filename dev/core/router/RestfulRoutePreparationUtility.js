@@ -14,7 +14,7 @@ export default class RestfulRoutePreparationUtility {
      * @memberOf RestfulRoutePreparationUtility
      */
     static isRestfulRoute(route) {
-        return "controllerClass" in route;
+        return "restful" in route;
     }
 
     /**

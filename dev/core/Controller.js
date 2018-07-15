@@ -1,4 +1,3 @@
-import Router from './Router';
 import {errors} from 'tramway-core';
 let {AbstractMethodError} = errors;
 
@@ -8,22 +7,21 @@ let {AbstractMethodError} = errors;
 export default class Controller {
     /**
      * Creates an instance of Controller.
-     * @param {Router} router Will default to the default router.
+     * @param {Router} router
      * @memberOf Controller
      */
     constructor(router) {
-        this.Router = router || Router;
+        this.router = router;
     }
 
     /**
-     * @static
      * @param {Object} res
      * @param {Object} req
      * @param {function(Error, Object)} next
      * 
      * @memberOf Controller
      */
-    static index(res, req, next) {
+    async index(res, req, next) {
         throw new AbstractMethodError();
     }
 
@@ -32,8 +30,8 @@ export default class Controller {
      * 
      * @memberOf Controller
      */
-    getRouter(){
-        return this.Router;
+    getRouter() {
+        return this.router;
     }
 
     /**
@@ -44,7 +42,7 @@ export default class Controller {
      * 
      * @memberOf Controller
      */
-    redirect(res, path, status){
+    redirect(res, path, status) {
         return res.redirect(status, path);
     }
 }

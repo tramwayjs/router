@@ -1,13 +1,13 @@
-import {Entity, services} from 'tramway-core';
+import {services} from 'tramway-core';
 import AuthenticationStrategy from '../policies/AuthenticationStrategy';
+import { Controller } from '../..';
 let {TypeEnforcementService} = services;
 
 /**
  * @export
  * @class Route
- * @extends {Entity}
  */
-export default class Route extends Entity {
+export default class Route {
     /**
      * Creates an instance of Route.
      * 
@@ -16,11 +16,11 @@ export default class Route extends Entity {
      * @memberOf Route
      */
     constructor(route) {
-        super();
         this.setPath(route.path)
             .setArguments(route.arguments)
             .setMethods(route.methods)
             .setController(route.controller)
+            .setAction(route.action)
             .setPolicy(route.policy);
     }
 
@@ -85,7 +85,7 @@ export default class Route extends Entity {
     }
 
     /**
-     * @returns {Function(res, req)}
+     * @returns {Controller}
      * 
      * @memberOf Route
      */
@@ -94,13 +94,30 @@ export default class Route extends Entity {
     }
 
     /**
-     * @param {Function(res, req)} controller
+     * @param {Controller} controller
      * @returns {Route}
      * 
      * @memberOf Route
      */
     setController(controller) {
         this.controller = controller || null;
+        return this;
+    }
+
+    /**
+     * @returns {string}
+     */
+    getAction() {
+        return this.action;
+    }
+
+    /**
+     * 
+     * @param {string} action Name of the Controller method for the route
+     * @returns {Route}
+     */
+    setAction(action) {
+        this.action = action;
         return this;
     }
 

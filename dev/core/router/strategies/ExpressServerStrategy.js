@@ -6,13 +6,14 @@ export default class ExpressServerStrategy extends RouterStrategy {
 
     /**
      * @param {any} app Server app
+     * @param {Security} security
      * 
      * @memberOf ExpressServerStrategy
      */
-    constructor(app, SecurityClass = Security){
+    constructor(app, security){
         super();
         this.app = app;
-        this.SecurityClass = SecurityClass;
+        this.security = security || new Security();
     }
 
     /**
@@ -30,41 +31,37 @@ export default class ExpressServerStrategy extends RouterStrategy {
      * @memberOf ExpressServerStrategy
      */
     prepareRoute(route){
-        route.getMethods().forEach(function(method){
+        route.getMethods().forEach(method => {
             let path = this.preparePath(route);
-            if (route.getPolicy()) {
-                this.useMethod(method, path, new this.SecurityClass(route.getPolicy()), route.getController());
-            } else {
-                this.useMethod(method, path, route.getController());
+            const controllerMiddleware = this.prepareControllerMiddleware(route.getController(), route.getAction());
+            const policy = route.getPolicy();
+
+            if (policy) {
+                const securityMiddleware = this.security.generateMiddleware(route.getPolicy());
+                return this.useMethod(method, path, securityMiddleware, controllerMiddleware);
             }
-        }.bind(this));
+
+            return this.useMethod(method, path, controllerMiddleware);
+        });
     }
 
     /**
      * @param {string} method
      * @param {string} path
-     * @param {function(Error, Object)} cb
+     * @param {[function(req, res, next)]} middleware
      * @returns
      * 
      * @memberOf ExpressServerStrategy
      */
-    useMethod(method, path, cb){
-        let params = [];
-
-        for (var key in arguments) {
-            if(key < 1) {
-                continue;
-            }
-            params.push(arguments[key]);
-        }
-
+    useMethod(method, path, ...middleware) {
         switch(method.toLowerCase()){
-            case 'get': return this.app.get.apply(this.app, params);
-            case 'post': return this.app.post.apply(this.app, params);
-            case 'put': return this.app.put.apply(this.app, params);
-            case 'delete': return this.app.delete.apply(this.app, params);
-            case 'all': return this.app.all.apply(this.app, params);
-            default: return this.app.get.apply(this.app, params);
+            case 'get': return this.app.get.apply(this.app, ...middleware);
+            case 'post': return this.app.post.apply(this.app, ...middleware);
+            case 'patch': return this.app.patch.apply(this.app, ...middleware);
+            case 'put': return this.app.put.apply(this.app, ...middleware);
+            case 'delete': return this.app.delete.apply(this.app, ...middleware);
+            case 'all': return this.app.all.apply(this.app, ...middleware);
+            default: return this.app.get.apply(this.app, ...middleware);
         }
     }
 
@@ -99,5 +96,9 @@ export default class ExpressServerStrategy extends RouterStrategy {
         let argString = ":";
         argString += params.join("/:");
         return argString;
+    }
+
+    prepareControllerMiddleware(controller, action) {
+        return controller[action];
     }
 }

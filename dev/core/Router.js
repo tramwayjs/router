@@ -12,12 +12,14 @@ export default class Router {
      * Creates an instance of Router.
      * @param {[Object]} routes
      * @param {RouterStrategy} strategy
+     * @param {DependencyResolver} resolver The DependencyResolver used to manage the dependency injection container
      * 
      * @memberOf Router
      */
-    constructor(routes, strategy){
+    constructor(routes, strategy, resolver){
         this.routes = routes;
         this.strategy = TypeEnforcementService.enforceInstance(strategy, RouterStrategy);
+        this.resolver = resolver;
     }
 
     /**
@@ -26,7 +28,7 @@ export default class Router {
      * @memberOf Router
      */
     initialize(){
-        let routes = RoutePreparationUtility.convertToUniformRoutes(this.routes);
+        let routes = RoutePreparationUtility.convertToUniformRoutes(this.routes, this.resolver);
         return this.strategy.prepareRoutes(routes);
     }
 
@@ -36,7 +38,7 @@ export default class Router {
      * @returns {string} path
      * @memberOf Router
      */
-    static buildPath(){
+    static buildPath() {
         let parts = Object.keys(arguments).map(key => arguments[key]).map(function(part){
             return part.replace(/^\/+|\/+$/gm,'');
         });
@@ -50,7 +52,7 @@ export default class Router {
      * 
      * @memberOf Router
      */
-    static buildQuery(params){
+    static buildQuery(params) {
         return Object.keys(params).map(key => `${key}=${params[key]}`).join("&");
     }
 }

@@ -18,33 +18,24 @@ export default class Authentication {
     }
 
     /**
-     * @param {function(Error, Object)} cb
-     * @returns {function(Error, Object)} cb
-     * 
      * @memberOf Authentication
      */
-    login(cb) {
-        return this.strategy.login(cb);
+    async login() {
+        return await this.strategy.login();
     }
 
     /**
-     * @param {function(Error, Object)} cb
-     * @returns {function(Error, Object)} cb
-     * 
      * @memberOf Authentication
      */
-    logout(cb) {
-        return this.strategy.logout(cb);
+    async logout() {
+        return await this.strategy.logout();
     }
 
     /**
-     * @param {function(Error, boolean)} cb
-     * @returns {function(Error, boolean)} cb
-     * 
      * @memberOf Authentication
      */
-    check(cb) {
-        return this.strategy.check(cb);
+    async check() {
+        return await this.strategy.check();
     }
 
     /**

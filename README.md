@@ -27,6 +27,8 @@ A typical routes file in the routes folder would import Controllers and directly
 
 Here's a sample routes file. The order of routes matters and is preserved by the router at all times.
 
+**Note: The definition for controllerClass has been removed and the controller attributes only takes an instance now. The Controller action now has an attribute that takes the string name**
+
 ```
 import MainController from "../controllers/MainController";
 import SecuredController from "../controllers/SecuredController";
@@ -36,34 +38,40 @@ let standardAuthenticationStrategy = new StandardAuthenticationPolicy();
 const routesValues = [
     {
         "methods": ["get"],
-        "controller": MainController.index
+        "controller": new MainController(),
+        "action": "index"
     },
     {
         "path": "/model",
-        "controllerClass": TestRestController,
-        "arguments": ["id"]
+        "controller": new TestRestController(),
+        "arguments": ["id"],
+        "restful": true
     },
     {
         "path": "/hello",
         "arguments": ["name"],
         "methods": ["get"],
-        "controller": MainController.sayHello
+        "controller": new MainController(),
+        "action": "sayHello"
     },
     {
         "path": "/secure",
         "methods": ["get"],
-        "controller": SecuredController.index,
+        "controller": new SecuredController(),
+        "action": "index",
         "policy": standardAuthenticationStrategy
     },
     {
         "arguments": ["name"],
         "methods": ["get"],
-        "controller": MainController.sayHello
+        "controller": new MainController(),
+        "action": "sayHello"
     },
     {
         "arguments": ["name"],
         "methods": ["post", "put"],
-        "controller": MainController.postTest
+        "controller": new MainController(),
+        "action": "postTest"
     }
 ];
 export default routesValues;
@@ -73,16 +81,66 @@ export default routesValues;
 | Attribute | Expected Values | Default Values | Notes |
 | --- | --- | --- | --- |
 | path | Unparameterized path string | "/" | If no path is specified, the router will default to root. |
-| controller | `Controller`'s action function | undefined | If no controllerClass is specified, the app will break |
-| controllerClass | `RestfulController` | undefined | The controller that a restful route will use - note that controller attribute will be ignored |
+| controller | `Controller` | undefined | If no Controller is specified, the app will break |
+| action | `string` | undefined | The name of the Controller method dedicated to handling the route. If not a restful route and no action is specified, the app will break |
+| restful | `boolean` | undefined | If the controller is a restful controller - note that action attribute will be ignored |
 | methods | ["get", "post", "put", "delete", "all"] | ["get"] | Indicates which http methods get assigned the controller. Restful routes will ignore this setting as it is automatically bound by implenentation |
 | arguments | string[] | "" | An optional ordered array of arguments to add to the path. ["id", "name"] equates to "/:id/:name"
 | policy | `AuthenticationStrategy` | undefined | Ignored if unpresent, applies a policy or authentication strategy before allowing the router to proceed to the controller when a request is made to the  |
+
+### Integrating with Dependency Injection
+
+To leverage dependency injection, just use the string name of the Controller service instead of the Controller instance itself. The same can be said for the policy.
+
+```
+let standardAuthenticationStrategy = new StandardAuthenticationPolicy();
+const routesValues = [
+    {
+        "methods": ["get"],
+        "controller": "controllers.main",
+        "action": "index"
+    },
+    {
+        "path": "/model",
+        "controller": "controllers.test_rest",
+        "arguments": ["id"],
+        "restful": true
+    },
+    {
+        "path": "/hello",
+        "arguments": ["name"],
+        "methods": ["get"],
+        "controller": "controllers.main",
+        "action": "sayHello"
+    },
+    {
+        "path": "/secure",
+        "methods": ["get"],
+        "controller": "controllers.secured",
+        "action": "index",
+        "policy": "policy.standard_authentication"
+    },
+    {
+        "arguments": ["name"],
+        "methods": ["get"],
+        "controller": "controllers.main",
+        "action": "sayHello"
+    },
+    {
+        "arguments": ["name"],
+        "methods": ["post", "put"],
+        "controller": "controllers.main",
+        "action": "postTest"
+    }
+];
+export default routesValues;
+```
 
 ## Router
 The Router will be called in your main server file where you create your Express server and get the routes file. This is typically at the root of your project. Once you have a router, initializing it will set up the routes and assign them to the app and return the app to be started via listen.
 
 Here's an example usage among parts of an express server file:
+
 ```
 import express from 'express';
 import {Router, strategies} from 'tramway-core-router';
@@ -94,7 +152,33 @@ let app = express();
 let {ExpressServerStrategy} = strategies;
 let router = new Router(routes, new ExpressServerStrategy(app));
 app = router.initialize();
-app.listen(PORT);
+```
+
+Here's an example usage with dependency injection (the entire router configuration would just be a services configuration file):
+
+```
+import {Router, strategies} from 'tramway-core-router';
+import {DependencyResolver} from 'tramway-core-dependency-injector';
+
+const {ExpressServerStrategy} = strategies;
+
+export default {
+    "router": {
+        "class": Router,
+        "constructor": [
+            {"type": "parameter", "key": "routes"},
+            {"type": "service", "key": "express-router-strategy"},
+            DependencyResolver,
+        ],
+    },
+    "express-router-strategy": {
+        "class": ExpressServerStrategy,
+        "constructor": [
+            {"type": "parameter", "key": "app"}, //the express app would also be containerized
+        ]
+    }
+}
+
 ```
 
 The router also exposes some static methods which can be used across your app without making another instance.
@@ -128,18 +212,20 @@ It takes the following arguments in the constructor:
 | Argument | Default | Description |
 | --- | --- | --- |
 | app | | The instantiated Express app |
-| SecurityClass | `Security` | The Security middleware to apply to routes and handle authentication with. It will always return an Express RouteHandler ```function(req, res, next)```. By default, the `ExpressServerStrategy` uses the default `Security` class but this parameter allows it to be overriden in cases where authentication is handled by a third party. |
+| security | `Security` | The Security middleware to apply to routes and handle authentication with. It has a method, `generateMiddleware` which will return an Express RouteHandler ```function(req, res, next)```. By default, the `ExpressServerStrategy` uses the default `Security` class but this parameter allows it to be overidden in cases where authentication is handled by a third party. |
+
+**Note, any previous implementations of an overidden Security parameter will need to move the logic to the `generateMiddleware` function and pass a valid Security object.**
 
 ## Controllers
 Controllers link to actions from the routing and act to direct the flow of the application.
 
 To create a controller, import the class and implement a derived class with static functions for each route.
 ```
-import {Controller} from 'tramway-core'; 
+import {Controller} from 'tramway-core-router'; 
 ```
 *Sample Controller action signature:*
 ```
-static index(req, res) {}
+async index(req, res) {}
 ```
 `req` and `res` represent the respective objects passed by your router. With Express the request and response objects are passed by default.
 
@@ -155,49 +241,136 @@ If you're just writing a Restful API, it can rapidly become tedious and messy wh
 
 Much of the logic behind this process can be abstracted, such that if you already have a `Connection` and a linked `Model`, all you will have to do is make a derived `RestfulController` to put it altogether.
 
-Here's a sample `RestfulRouter` implementation.
+Here's a sample `RestfulController` implementation.
 ```
 import {controllers} from 'tramway-core-router';
-import TestModel from '../models/TestModel';
-let {RestfulController} = controllers;
+import {Service} from '../services';
+const {RestfulController} = controllers;
 
 export default class TestRestController extends RestfulController {
-    static get(req, res) {
-        let testModel = (new TestModel()).setId(req.params.id);
-        return super.get(testModel, req, res);
-    }
-    static getAll(req, res) {
-        let testModel = new TestModel();
-        return super.getAll(testModel, req, res);
-    }
-    static create(req, res) {
-        let testModel = new TestModel().updateEntity(req.body);
-        return super.create(testModel, req, res);
-    }
-    static update(req, res) {
-        let testModel = new TestModel().updateEntity(req.body).setId(req.params.id);
-        return super.update(testModel, req, res);
-    }
-    static delete(req, res) {
-        let testModel = new TestModel().setId(req.params.id);
-        return super.delete(testModel, req, res);
+    constructor() {
+        super(new Service());
     }
 }
 ```
+
+The RestfulController comes with pre-implemented methods.
+
+```
+import Controller from "../Controller";
+
+/**
+ * @export
+ * @class RestfulController
+ * @extends {Controller}
+ */
+export default class RestfulController extends Controller {
+    constructor(service) {
+        super();
+        this.service = service;
+    }
+    
+    async getOne(req, res) {
+        const {id} = req.params;
+        let item;
+
+        try {
+            item = await this.service.getOne(id);
+        } catch(e) {
+            return res.sendStatus(500);
+        }
+
+        if (!item) {
+            return res.sendStatus(404);
+        }
+
+        return res.json(item);
+    }
+
+    async get(req, res) {
+        let items;
+        let {query} = req;
+
+        try {
+            items = await this.service.get(query);
+        } catch (e) {
+            return res.sendStatus(500);
+        }
+
+        if (!items) {
+            return res.sendStatus(400);
+        }
+
+        return res.json(items);
+    }
+
+    async create(req, res) {
+        const {body} = req;
+        try {
+            await this.service.create(body)
+        } catch (e) {
+            return res.status(400).json(e);
+        }
+
+        return res.sendStatus(201);
+    }
+    
+    async update(req, res) {
+        const {body, params} = req;
+        const {id} = params;
+
+        try {
+            await this.service.update(id, body);
+        } catch (e) {
+            return res.status(400).json(e);
+        }
+
+        return res.sendStatus(204);
+    }
+    
+    async replace(req, res) {
+        const {body, params} = req;
+        const {id} = params;
+
+        try {
+            await this.service.update(id, body);
+        } catch (e) {
+            return res.status(400).json(e);
+        }
+
+        return res.sendStatus(204);
+    }
+
+    async delete(req, res) {
+        const {id} = req.params;
+        try {
+            await this.service.delete(id);
+        } catch (e) {
+            return res.sendStatus(500);
+        }
+
+        return res.sendStatus(204);
+    }
+}
+```
+
 ## Policies
 Policies let you regulate routing for authentication or permissions-based reasons. This allows you to write authentication code in one place, use it in the router and not have to burden the rest of the codebase with it.
 
-To write an authentication policy, import the class and implement the stubs.
+To write an authentication policy, import the class and implement the stubs. 
+
 ```
 import {policies} from 'tramway-core-router';
 let {AuthenticationStrategy} = policies;
 ```
 
+**Note: All functions are async functions, callbacks are no longer supported.**
+
 | Function | Usage |
 | --- | --- |
 | ```constructor()``` | Sets a redirect via ```super(redirectRoute: string)``` |
-| ```login(cb: function(Error, any))``` | Implements and handles login criteria for the strategy |
-| ```logout(cb: function(Error, any))``` | Implements and handles logout criteria for the strategy |
-| ```check(cb: function(Error, any))``` | Implements and handles the check on the current status of user with regards to the policy. |
+| ```login()``` | Implements and handles login criteria for the strategy |
+| ```logout()``` | Implements and handles logout criteria for the strategy |
+| ```check()``` | Implements and handles the check on the current status of user with regards to the policy. |
 
 If a policy is indicated with the route, it will call the framework's internal Security service which will return a result based on the check performed by the Authentication service using the Authentication strategy - which uses strategy pattern. It's at this point where the router will redirect with a 401 to the policy's redirect route if the strategy's check criteria fails.
