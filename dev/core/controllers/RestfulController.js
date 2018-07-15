@@ -1,4 +1,5 @@
 import Controller from "../Controller";
+import { HttpStatus } from "../../index";
 
 /**
  * @export
@@ -25,11 +26,11 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.getOne(id);
         } catch(e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!item) {
-            return res.sendStatus(404);
+            return res.sendStatus(HttpStatus.NOT_FOUND);
         }
 
         return res.json(item);
@@ -49,11 +50,11 @@ export default class RestfulController extends Controller {
         try {
             items = await this.service.get(query);
         } catch (e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!items) {
-            return res.sendStatus(400);
+            return res.sendStatus(HttpStatus.BAD_REQUEST);
         }
 
         return res.json(items);
@@ -71,10 +72,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.create(body)
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(201);
+        return res.sendStatus(HttpStatus.CREATED);
     }
     
     /**
@@ -91,10 +92,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -111,10 +112,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -129,9 +130,9 @@ export default class RestfulController extends Controller {
         try {
             await this.service.delete(id);
         } catch (e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 }

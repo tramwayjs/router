@@ -5,6 +5,7 @@ Tramway is a simple router for the tramway framework. It includes:
 3. Authentication policies that allow for multiple strategies to be used and interchanged without needing the logic throughout the code.
 and so much more.
 4. Swappable router strategies that keep your app consistent no matter which solution you use, server or server-less.
+5. Includes `http-status-codes` to have status code enums.
 
 # Installation:
 1. `npm install tramway-core-router`
@@ -234,7 +235,78 @@ The Controller class also contains some helper functions that can be used by any
 | Function | Usage |
 | --- | --- |
 | ```getRouter(): Router``` | Returns the Router class for extendability |
-| ```redirect(res: Object, path: string, status: number)``` | Calls the main redirect function in Express. |
+| ```redirect(res: Object, path: string, status: number)``` | Calls the main redirect function in Express. Will default to a 301 status code. |
+
+### Status codes
+It's common to return different status codes with the response at the controller-level. Bundled with the `tramway-core-router` library is the `node-http-status` library by @prettymuchbryce which provides enums for different status codes.
+
+To access the enum:
+
+```
+import {HttpStatus} from 'tramway-core-router';
+
+//for 200
+HttpStatus.OK;
+```
+
+Full table of supported Enums:
+
+Constant                            | Code  | Status Text
+------------------------------------|-------|-----------------------------------
+CONTINUE                            | 100   | Continue
+SWITCHING_PROTOCOLS                 | 101   | Switching Protocols
+PROCESSING                          | 102   | Processing
+OK                                  | 200   | OK
+CREATED                             | 201   | Created
+ACCEPTED                            | 202   | Accepted
+NON_AUTHORITATIVE_INFORMATION       | 203   | Non Authoritative Information
+NO_CONTENT                          | 204   | No Content
+RESET_CONTENT                       | 205   | Reset Content
+PARTIAL_CONTENT                     | 206   | Partial Content
+MULTI_STATUS                        | 207   | Multi-Status
+MULTIPLE_CHOICES                    | 300   | Multiple Choices
+MOVED_PERMANENTLY                   | 301   | Moved Permanently
+MOVED_TEMPORARILY                   | 302   | Moved Temporarily
+SEE_OTHER                           | 303   | See Other
+NOT_MODIFIED                        | 304   | Not Modified
+USE_PROXY                           | 305   | Use Proxy
+TEMPORARY_REDIRECT                  | 307   | Temporary Redirect
+PERMANENT_REDIRECT                  | 308   | Permanent Redirect
+BAD_REQUEST                         | 400   | Bad Request
+UNAUTHORIZED                        | 401   | Unauthorized
+PAYMENT_REQUIRED                    | 402   | Payment Required
+FORBIDDEN                           | 403   | Forbidden
+NOT_FOUND                           | 404   | Not Found
+METHOD_NOT_ALLOWED                  | 405   | Method Not Allowed
+NOT_ACCEPTABLE                      | 406   | Not Acceptable
+PROXY_AUTHENTICATION_REQUIRED       | 407   | Proxy Authentication Required
+REQUEST_TIMEOUT                     | 408   | Request Timeout
+CONFLICT                            | 409   | Conflict
+GONE                                | 410   | Gone
+LENGTH_REQUIRED                     | 411   | Length Required
+PRECONDITION_FAILED                 | 412   | Precondition Failed
+REQUEST_TOO_LONG                    | 413   | Request Entity Too Large
+REQUEST_URI_TOO_LONG                | 414   | Request-URI Too Long
+UNSUPPORTED_MEDIA_TYPE              | 415   | Unsupported Media Type
+REQUESTED_RANGE_NOT_SATISFIABLE     | 416   | Requested Range Not Satisfiable
+EXPECTATION_FAILED                  | 417   | Expectation Failed
+IM_A_TEAPOT                         | 418   | I'm a teapot
+INSUFFICIENT_SPACE_ON_RESOURCE      | 419   | Insufficient Space on Resource
+METHOD_FAILURE                      | 420   | Method Failure
+UNPROCESSABLE_ENTITY                | 422   | Unprocessable Entity
+LOCKED                              | 423   | Locked
+FAILED_DEPENDENCY                   | 424   | Failed Dependency
+PRECONDITION_REQUIRED               | 428   | Precondition Required
+TOO_MANY_REQUESTS                   | 429   | Too Many Requests
+REQUEST_HEADER_FIELDS_TOO_LARGE     | 431   | Request Header Fields Too Large
+INTERNAL_SERVER_ERROR               | 500   | Server Error
+NOT_IMPLEMENTED                     | 501   | Not Implemented
+BAD_GATEWAY                         | 502   | Bad Gateway
+SERVICE_UNAVAILABLE                 | 503   | Service Unavailable
+GATEWAY_TIMEOUT                     | 504   | Gateway Timeout
+HTTP_VERSION_NOT_SUPPORTED          | 505   | HTTP Version Not Supported
+INSUFFICIENT_STORAGE                | 507   | Insufficient Storage
+NETWORK_AUTHENTICATION_REQUIRED     | 511   | Network Authentication Required
 
 ### Restful Controllers
 If you're just writing a Restful API, it can rapidly become tedious and messy when you end up creating each part of the CRUD structure and register each route. 
@@ -258,18 +330,14 @@ The RestfulController comes with pre-implemented methods.
 
 ```
 import Controller from "../Controller";
+import { HttpStatus } from "../../index";
 
-/**
- * @export
- * @class RestfulController
- * @extends {Controller}
- */
 export default class RestfulController extends Controller {
     constructor(service) {
         super();
         this.service = service;
     }
-    
+
     async getOne(req, res) {
         const {id} = req.params;
         let item;
@@ -277,11 +345,11 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.getOne(id);
         } catch(e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!item) {
-            return res.sendStatus(404);
+            return res.sendStatus(HttpStatus.NOT_FOUND);
         }
 
         return res.json(item);
@@ -294,11 +362,11 @@ export default class RestfulController extends Controller {
         try {
             items = await this.service.get(query);
         } catch (e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!items) {
-            return res.sendStatus(400);
+            return res.sendStatus(HttpStatus.BAD_REQUEST);
         }
 
         return res.json(items);
@@ -309,10 +377,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.create(body)
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(201);
+        return res.sendStatus(HttpStatus.CREATED);
     }
     
     async update(req, res) {
@@ -322,12 +390,12 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
-    
+
     async replace(req, res) {
         const {body, params} = req;
         const {id} = params;
@@ -335,10 +403,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            return res.status(400).json(e);
+            return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
     async delete(req, res) {
@@ -346,10 +414,10 @@ export default class RestfulController extends Controller {
         try {
             await this.service.delete(id);
         } catch (e) {
-            return res.sendStatus(500);
+            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return res.sendStatus(204);
+        return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 }
 ```
