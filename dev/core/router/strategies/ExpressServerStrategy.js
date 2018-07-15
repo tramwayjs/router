@@ -54,14 +54,16 @@ export default class ExpressServerStrategy extends RouterStrategy {
      * @memberOf ExpressServerStrategy
      */
     useMethod(method, path, ...middleware) {
+        let params = [path, ...middleware];
+
         switch(method.toLowerCase()){
-            case 'get': return this.app.get.apply(this.app, ...middleware);
-            case 'post': return this.app.post.apply(this.app, ...middleware);
-            case 'patch': return this.app.patch.apply(this.app, ...middleware);
-            case 'put': return this.app.put.apply(this.app, ...middleware);
-            case 'delete': return this.app.delete.apply(this.app, ...middleware);
-            case 'all': return this.app.all.apply(this.app, ...middleware);
-            default: return this.app.get.apply(this.app, ...middleware);
+            case 'get': return this.app.get.apply(this.app, params);
+            case 'post': return this.app.post.apply(this.app, params);
+            case 'patch': return this.app.patch.apply(this.app, params);
+            case 'put': return this.app.put.apply(this.app, params);
+            case 'delete': return this.app.delete.apply(this.app, params);
+            case 'all': return this.app.all.apply(this.app, params);
+            default: return this.app.get.apply(this.app, params);
         }
     }
 
@@ -99,6 +101,7 @@ export default class ExpressServerStrategy extends RouterStrategy {
     }
 
     prepareControllerMiddleware(controller, action) {
+        console.log(controller, action)
         return controller[action];
     }
 }

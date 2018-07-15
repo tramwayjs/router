@@ -14,6 +14,10 @@ export default class RoutePreparationUtility {
      * @memberOf RoutePreparationTemplate
      */
     static convertToUniformRoutes(routes, resolver) {
+        if (!Array.isArray(routes)) {
+            routes = Object.values(routes);
+        }
+
         return routes
             .map((route) => {
                 if (resolver && 'string' === typeof route.controller) {
@@ -24,6 +28,10 @@ export default class RoutePreparationUtility {
                     route.policy = resolver.getService(route.policy);
                 }
 
+                if (!Array.isArray(route.methods)) {
+                    route.methods = Object.values(route.methods);
+                }
+                
                 if (RestfulRoutePreparationUtility.isRestfulRoute(route)) {
                     return RestfulRoutePreparationUtility.convertRestfulRoute(new RestfulRoute(route));
                 } 
