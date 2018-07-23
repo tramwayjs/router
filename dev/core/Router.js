@@ -1,8 +1,6 @@
-import Route from './entities/Route';
+import {Route} from './entities';
 import RoutePreparationUtility from './router/RoutePreparationUtility';
 import RouterStrategy from './router/RouterStrategy';
-import {services} from "tramway-core";
-let {TypeEnforcementService} = services;
 
 /**
  * @class Router
@@ -18,7 +16,7 @@ export default class Router {
      */
     constructor(routes, strategy, resolver){
         this.routes = routes;
-        this.strategy = TypeEnforcementService.enforceInstance(strategy, RouterStrategy);
+        this.strategy = strategy;
         this.resolver = resolver;
     }
 

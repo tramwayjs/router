@@ -1,6 +1,4 @@
-import AuthenticationStrategy from './policies/AuthenticationStrategy';
-import {services} from 'tramway-core';
-let {TypeEnforcementService} = services;
+import {AuthenticationStrategy} from './policies';
 
 /**
  * @export
@@ -14,7 +12,7 @@ export default class Authentication {
      * @memberOf Authentication
      */
     constructor(authenticationStrategy) {
-        this.strategy = TypeEnforcementService.enforceInstance(authenticationStrategy, AuthenticationStrategy);
+        this.strategy = authenticationStrategy;
     }
 
     /**

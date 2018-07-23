@@ -29,7 +29,6 @@
     "tramway-core-testsuite": "1.1.0"
   },
   "dependencies": {
-    "http-status-codes": "^1.3.0",
-    "tramway-core": "^1.0.0"
+    "http-status-codes": "^1.3.0"
   }
 }
