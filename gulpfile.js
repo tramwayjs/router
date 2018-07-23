@@ -5,7 +5,7 @@ const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 
 const DEV_DIRECTORY = 'dev/**/*.js';
-const DIST_DIRECTORY = '';
+const DIST_DIRECTORY = 'dist';
 
 gulp.task('build', function() {
     return gulp
@@ -17,6 +17,7 @@ gulp.task('build', function() {
                 "transform-object-rest-spread"
             ],
             "presets": [
+                "babel-preset-react-app",
                 "es2015-node6"
             ]
         }))
@@ -37,6 +38,7 @@ gulp.task('distribute', function() {
                 "transform-object-rest-spread"
             ],
             "presets": [
+                "babel-preset-react-app",
                 "es2015-node6"
             ]
         }))

@@ -4,3 +4,4 @@ core/**/*.js.map
 /index.js
 *.js.map
 /test.js
+dist
