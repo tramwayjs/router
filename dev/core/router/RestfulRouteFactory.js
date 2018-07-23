@@ -1,8 +1,6 @@
 import Route from '../entities/Route';
 import RestfulRoute from '../entities/RestfulRoute';
 import RestfulController from '../controllers/RestfulController';
-import {services} from 'tramway-core';
-let {TypeEnforcementService} = services;
 
 /**
  * @export
@@ -18,8 +16,6 @@ export default class RestfulRouteFactory {
      * @memberOf RestfulRouteFactory
      */
     static createRoutes(route) {
-        route = TypeEnforcementService.enforceInstance(route, RestfulRoute);
-
         return [
             (new Route(route)).setMethods(['get']).setAction("getOne"),
             (new Route(route)).setMethods(['get']).setAction("get").setArguments(""),

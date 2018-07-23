@@ -1,8 +1,6 @@
-import {errors} from 'tramway-core';
 import RestfulRoutePreparationUtility from './RestfulRoutePreparationUtility';
-import Route from '../entities/Route';
-import RestfulRoute from '../entities/RestfulRoute';
-let {AbstractMethodError} = errors;
+import {Route, RestfulRoute} from '../entities';
+import {AbstractMethodError} from '../errors';
 
 export default class RoutePreparationUtility {
     /**

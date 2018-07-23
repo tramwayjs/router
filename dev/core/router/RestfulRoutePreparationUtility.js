@@ -1,4 +1,4 @@
-import RestfulRoute from '../entities/RestfulRoute';
+import {RestfulRoute} from '../entities';
 import RestfulRouteFactory from './RestfulRouteFactory';
 
 /**
