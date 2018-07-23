@@ -1,6 +1,5 @@
-import {errors} from 'tramway-core';
 import { HttpStatus } from '../index';
-let {AbstractMethodError} = errors;
+import {AbstractMethodError} from './errors';
 
 /**
  * @class Controller

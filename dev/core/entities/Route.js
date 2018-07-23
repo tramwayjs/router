@@ -1,7 +1,5 @@
-import {services} from 'tramway-core';
-import AuthenticationStrategy from '../policies/AuthenticationStrategy';
+import {AuthenticationStrategy} from '../policies';
 import { Controller } from '../..';
-let {TypeEnforcementService} = services;
 
 /**
  * @export
@@ -39,8 +37,8 @@ export default class Route {
      * 
      * @memberOf Route
      */
-    setPath(path) {
-        this.path = TypeEnforcementService.enforceTypes(path, "string", path => "");
+    setPath(path = "") {
+        this.path = path;
         return this;
     }
 
@@ -137,7 +135,7 @@ export default class Route {
      * @memberOf Route
      */
     setPolicy(policy) {
-        this.policy = TypeEnforcementService.enforceInstance(policy, AuthenticationStrategy, policy => null);
+        this.policy = policy || null;
         return this;
     }
 

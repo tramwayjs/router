@@ -1,5 +1,5 @@
 import Route from './Route';
-import RestfulController from '../controllers/RestfulController';
+import {RestfulController} from '../controllers';
 
 /**
  * @export

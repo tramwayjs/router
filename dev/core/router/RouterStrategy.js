@@ -1,5 +1,4 @@
-import {errors} from "tramway-core";
-let {AbstractMethodError} = errors;
+import {AbstractMethodError} from '../errors';
 
 export default class RouterStrategy {
     /**

@@ -1,5 +1,5 @@
 import Authentication from "./Authentication";
-import AuthenticationStrategy from "./policies/AuthenticationStrategy";
+import {AuthenticationStrategy} from "./policies";
 import { HttpStatus } from "../index";
 
 /**
