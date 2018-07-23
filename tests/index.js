@@ -1,6 +1,6 @@
 const assert = require('assert');
 const utils = require('tramway-core-testsuite');
-const lib = require('../index.js');
+const lib = require('../dist/index.js');
 var describeCoreClass = utils.describeCoreClass;
 var describeFunction = utils.describeFunction;
 
@@ -32,10 +32,6 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         [],
         ["index", "getRouter", "redirect"],
         function(testClass, testInstance, classFunctions, instanceFunctions) {
-            describe("The 'index' function should have the same signature", describeFunction(
-                testInstance["index"], 
-                ["res", "req", "next"]
-            ));
             describe("The 'getRouter' function should have the same signature", describeFunction(
                 testInstance["getRouter"],
                 []
@@ -68,16 +64,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
         lib.Authentication,
         "Authentication", 
         [],
-        ["login", "logout", "check", "getStrategy"],
-        function(testClass, testInstance, classFunctions, instanceFunctions) {
-            instanceFunctions.forEach(function(func){
-                var args = func === "getStrategy" ? [] : ["request"];
-                describe("The '" + func + "' function should have the same signature", describeFunction(
-                    testInstance[func], 
-                    args
-                ));
-            });
-        }
+        ["login", "logout", "check", "getStrategy"]
     ));
 
     describe("Should return an object for controllers.", function(){
@@ -117,16 +104,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             lib.policies.AuthenticationStrategy, 
             "AuthenticationStrategy", 
             [],
-            ["login", "logout", "check", "getRedirectRoute"],
-            function(testClass, testInstance, classFunctions, instanceFunctions) {
-                instanceFunctions.forEach(function(func){
-                    var args = func === "getRedirectRoute" ? [] : ["request"];
-                    describe("The '" + func + "' function should have the same signature", describeFunction(
-                        testInstance[func], 
-                        args
-                    ));
-                });
-            }
+            ["login", "logout", "check", "getRedirectRoute"]
         ));
     });
     describe("Should return an object for strategies.", function(){
@@ -142,29 +120,7 @@ describe("Simple acceptance tests to ensure library returns what's promised.", f
             lib.strategies.ExpressServerStrategy, 
             "ExpressServerStrategy", 
             [],
-            ["prepareRoutes", "prepareRoute", "useMethod", "preparePath", "prepareArguments"],
-            function(testClass, testInstance, classFunctions, instanceFunctions) {
-                describe("The 'prepareRoutes' function should have the same signature", describeFunction(
-                    testInstance["prepareRoutes"], 
-                    ["routes"]
-                ));
-                describe("The 'prepareRoute' function should have the same signature", describeFunction(
-                    testInstance["prepareRoute"], 
-                    ["route"]
-                ));
-                describe("The 'useMethod' function should have the same signature", describeFunction(
-                    testInstance["useMethod"], 
-                    ["method", "path", "...middleware"]
-                ));
-                describe("The 'preparePath' function should have the same signature", describeFunction(
-                    testInstance["preparePath"], 
-                    ["route"]
-                ));
-                describe("The 'prepareArguments' function should have the same signature", describeFunction(
-                    testInstance["prepareArguments"], 
-                    ["params"]
-                ));
-            }
+            ["prepareRoutes", "prepareRoute", "useMethod", "preparePath", "prepareArguments"]
         ));
     });
 });
