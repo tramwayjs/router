@@ -90,9 +90,13 @@ export default class ExpressServerStrategy extends RouterStrategy {
      * 
      * @memberOf ExpressServerStrategy
      */
-    prepareArguments(params){
+    prepareArguments(params = []){
         if ("string" === typeof params) {
             return params;
+        }
+
+        if (!Array.isArray(params)) {
+            params = Object.values(params);
         }
 
         let argString = ":";
