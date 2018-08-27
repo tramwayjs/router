@@ -7,8 +7,8 @@ import { HttpStatus } from "../../index";
  * @extends {Controller}
  */
 export default class RestfulController extends Controller {
-    constructor(service) {
-        super();
+    constructor(router, service) {
+        super(router);
         this.service = service;
     }
 
