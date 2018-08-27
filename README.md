@@ -30,7 +30,7 @@ Here's a sample routes file. The order of routes matters and is preserved by the
 
 **Note: The definition for controllerClass has been removed and the controller attributes only takes an instance now. The Controller action now has an attribute that takes the string name**
 
-```
+```javascript
 import MainController from "../controllers/MainController";
 import SecuredController from "../controllers/SecuredController";
 import StandardAuthenticationPolicy from "../policies/StandardAuthenticationPolicy";
@@ -93,7 +93,7 @@ export default routesValues;
 
 To leverage dependency injection, just use the string name of the Controller service instead of the Controller instance itself. The same can be said for the policy.
 
-```
+```javascript
 let standardAuthenticationStrategy = new StandardAuthenticationPolicy();
 const routesValues = [
     {
@@ -142,7 +142,7 @@ The Router will be called in your main server file where you create your Express
 
 Here's an example usage among parts of an express server file:
 
-```
+```javascript
 import express from 'express';
 import {Router, strategies} from 'tramway-core-router';
 import routes from './routes/routes.js';
@@ -157,7 +157,7 @@ app = router.initialize();
 
 Here's an example usage with dependency injection (the entire router configuration would just be a services configuration file):
 
-```
+```javascript
 import {Router, strategies} from 'tramway-core-router';
 import {DependencyResolver} from 'tramway-core-dependency-injector';
 
@@ -194,7 +194,7 @@ The biggest addition is strategies which helps keep your apps consistent across 
 
 All strategies must extend the `RouterStrategy` class and implement the `prepareRoute` function (and optionally override the `prepareRoutes` function).
 
-```
+```javascript
 import {RouterStrategy} from 'tramway-core-router';
 
 export default MyRouterStrategy extends RouterStrategy {
@@ -221,11 +221,11 @@ It takes the following arguments in the constructor:
 Controllers link to actions from the routing and act to direct the flow of the application.
 
 To create a controller, import the class and implement a derived class with static functions for each route.
-```
+```javascript
 import {Controller} from 'tramway-core-router'; 
 ```
 *Sample Controller action signature:*
-```
+```javascript
 async index(req, res) {}
 ```
 `req` and `res` represent the respective objects passed by your router. With Express the request and response objects are passed by default.
@@ -242,7 +242,7 @@ It's common to return different status codes with the response at the controller
 
 To access the enum:
 
-```
+```javascript
 import {HttpStatus} from 'tramway-core-router';
 
 //for 200
@@ -311,30 +311,44 @@ NETWORK_AUTHENTICATION_REQUIRED     | 511   | Network Authentication Required
 ### Restful Controllers
 If you're just writing a Restful API, it can rapidly become tedious and messy when you end up creating each part of the CRUD structure and register each route. 
 
-Much of the logic behind this process can be abstracted, such that if you already have a `Connection` and a linked `Model`, all you will have to do is make a derived `RestfulController` to put it altogether.
+Much of the logic behind this process can be abstracted, such that if you already have a `Provider` and a linked `Repository`, all you will have to do is make a derived `RestfulController` to put it altogether.
 
-Here's a sample `RestfulController` implementation.
-```
+Here's a sample `RestfulController` implementation if you want to have a stub.
+
+```javascript
 import {controllers} from 'tramway-core-router';
 import {Service} from '../services';
 const {RestfulController} = controllers;
 
 export default class TestRestController extends RestfulController {
-    constructor() {
-        super(new Service());
+    constructor(router, service) {
+        super(router, service);
     }
 }
 ```
 
+With dependency injection, adding the declaration using the RestfulController in the controller dependencies is enough.
+
+```javascript
+"controller.rest.testrest": {
+    "class": RestfulController,
+    "constructor": [
+        {"type": "service", "key": "router"},
+        {"type": "service", "key": "service.testrest"}
+    ],
+    "functions": []
+},
+```
+
 The RestfulController comes with pre-implemented methods.
 
-```
+```javascript
 import Controller from "../Controller";
 import { HttpStatus } from "../../index";
 
 export default class RestfulController extends Controller {
-    constructor(service) {
-        super();
+    constructor(router, service) {
+        super(router);
         this.service = service;
     }
 
@@ -427,7 +441,7 @@ Policies let you regulate routing for authentication or permissions-based reason
 
 To write an authentication policy, import the class and implement the stubs. 
 
-```
+```javascript
 import {policies} from 'tramway-core-router';
 let {AuthenticationStrategy} = policies;
 ```
