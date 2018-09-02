@@ -1,6 +1,6 @@
 {
   "name": "tramway-core-router",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "An extendable router for the tramway-core framework",
   "author": "Julian Wolfe",
   "license": "MIT",
