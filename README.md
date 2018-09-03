@@ -456,3 +456,32 @@ let {AuthenticationStrategy} = policies;
 | ```check(request)``` | Implements and handles the check on the current status of user with regards to the policy. |
 
 If a policy is indicated with the route, it will call the framework's internal Security service which will return a result based on the check performed by the Authentication service using the Authentication strategy - which uses strategy pattern. It's at this point where the router will redirect with a 401 to the policy's redirect route if the strategy's check criteria fails.
+
+## Formatters
+Formatters let you standardize the format of responses and could support different content headers. 
+
+By default, the `ResponseFormatter` bundled with the library and used with the `RestfulController` will just return the entity or collection but in use cases like REST, it makes sense to have the formatter resolve the schema and content type.
+
+To make a custom formatter, extend the `ResponseFormatter` and implement the `formatEntity` and `formatCollection` methods.
+
+```javascript
+import {ResponseFormatter} from 'tramway-core-router';
+
+export default class CustomResponseFormatter extends ResponseFormatter {
+    /**
+     * 
+     * @param {Entity} entity 
+     */
+    formatEntity(entity) {
+        return entity;
+    }
+
+    /**
+     * 
+     * @param {Collection} collection 
+     */
+    formatCollection(collection) {
+        return collection;
+    }
+}
+```
