@@ -1,4 +1,5 @@
 import Controller from "../Controller";
+import ResponseFormatter from '../ResponseFormatter';
 import { HttpStatus } from "../../index";
 
 /**
@@ -7,9 +8,10 @@ import { HttpStatus } from "../../index";
  * @extends {Controller}
  */
 export default class RestfulController extends Controller {
-    constructor(router, service) {
+    constructor(router, service, formatter) {
         super(router);
         this.service = service;
+        this.formatter = formatter || new ResponseFormatter();
     }
 
     /**
@@ -33,7 +35,7 @@ export default class RestfulController extends Controller {
             return res.sendStatus(HttpStatus.NOT_FOUND);
         }
 
-        return res.json(item);
+        return this.formatter.send(res, this.formatter.formatEntity(item));
     }
 
     /**
@@ -57,7 +59,7 @@ export default class RestfulController extends Controller {
             return res.sendStatus(HttpStatus.BAD_REQUEST);
         }
 
-        return res.json(items);
+        return this.formatter.send(res, this.formatter.formatCollection(items));
     }
 
     /**
