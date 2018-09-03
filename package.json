@@ -1,6 +1,6 @@
 {
   "name": "tramway-core-router",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "An extendable router for the tramway-core framework",
   "author": "Julian Wolfe",
   "license": "MIT",
@@ -14,18 +14,17 @@
   "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run compile",
-    "compile": "NODE_ENV=production ./node_modules/.bin/gulp distribute",
-    "test": "NODE_ENV=production ./node_modules/.bin/gulp distribute && ./node_modules/.bin/mocha tests"
+    "compile": "NODE_ENV=production ./node_modules/.bin/tramway build",
+    "test": "npm run compile && ./node_modules/.bin/mocha tests"
   },
   "devDependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015-node6": "^0.4.0",
     "babel-preset-react-app": "^3.1.2",
-    "gulp": "~3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-sourcemaps": "~1.9.1",
     "mocha": "^3.2.0",
+    "tramway": "^0.3.0",
     "tramway-core-testsuite": "1.1.0"
   },
   "dependencies": {

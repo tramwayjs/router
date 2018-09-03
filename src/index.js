@@ -2,6 +2,7 @@ import Router from './core/Router';
 import Controller from './core/Controller';
 import Authentication from './core/Authentication';
 import RouterStrategy from './core/router/RouterStrategy';
+import ResponseFormatter from './core/ResponseFormatter';
 import HttpStatus from 'http-status-codes';
 
 import * as controllers from './core/controllers';
@@ -14,6 +15,7 @@ export {
     Controller, 
     Authentication, 
     RouterStrategy,
+    ResponseFormatter,
     HttpStatus,
     controllers, 
     entities, 
