@@ -189,6 +189,13 @@ The router also exposes some static methods which can be used across your app wi
 | ```buildPath(...string): string``` | ```"a/b/c" === Router.buildPath("a", "b", "c")``` | Returns a clean path given any number of strings. |
 | ```buildQuery(params: Object): string``` | ```"a=1&b=2&c=true" === Router.buildQuery({"a": 1, "b": 2, "c": true})``` | Returns a query string for any associative object |
 
+In addition, you can get a specific route by name or by controller and action.
+
+| Function | Usage | Notes |
+| --- | --- | --- |
+| ```getRoute(name: string): Object``` |  | Requires adding a `name` key to each route in the routes config |
+| ```getRouteByAction(controllerName, actionName): Object``` |  | A helper is available in the base `Controller` class so all you need to do is pass the actionName which is the name of the method |
+
 ### Strategies
 The biggest addition is strategies which helps keep your apps consistent across clients and servers and also aid in keeping your app framework agnostic by adapting a consistent format across multiple router types which can be plug and play.
 
@@ -236,6 +243,8 @@ The Controller class also contains some helper functions that can be used by any
 | --- | --- |
 | ```getRouter(): Router``` | Returns the Router class for extendability |
 | ```redirect(res: Object, path: string, status: number)``` | Calls the main redirect function in Express. Will default to a 301 status code. |
+| ```getRoute(name: string)``` | Gets route metadata by name. |
+| ```getRouteByAction(action: string)``` | Gets route for the current controller action where action is the method name. |
 
 ### Status codes
 It's common to return different status codes with the response at the controller-level. Bundled with the `tramway-core-router` library is the `node-http-status` library by @prettymuchbryce which provides enums for different status codes.
@@ -340,101 +349,54 @@ With dependency injection, adding the declaration using the RestfulController in
 },
 ```
 
-The RestfulController comes with pre-implemented methods.
+The RestfulController comes with pre-implemented functions.
+
+| Function | Url | Method | Response |
+| --- | --- | --- | --- |
+| getOne | /:resource/:id | GET | A formatted resource entity |
+| get | /:resource | GET | A formatted resource collection |
+| create | /:resource | POST | Inserts a resource entity |
+| update | /:resource/:id | PATCH | Updates a resource entity |
+| replace | /:resource/:id | PUT | Replaces a resource entity |
+| delete | /:resource/:id | DELETE | Deletes a resource entity |
+
+You can add custom methods to deal with supplementary API routes and subresources. Writing a custom method is as simple as writing a traditional Express route handler and returning data via a helper method (`sendCollection`, `sendEntity`) to ensure consistent formatting across the API with your `ResponseFormatter`.
 
 ```javascript
-import Controller from "../Controller";
-import { HttpStatus } from "../../index";
+async getSubResources(req, res) {
+    //handle any logic via a service you declared with dependency injection
 
-export default class RestfulController extends Controller {
-    constructor(router, service) {
-        super(router);
-        this.service = service;
-    }
+    //If you get a collection of entities, return with this helper method.
+    return this.sendCollection(res, collection, options);
 
-    async getOne(req, res) {
-        const {id} = req.params;
-        let item;
-
-        try {
-            item = await this.service.getOne(id);
-        } catch(e) {
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        if (!item) {
-            return res.sendStatus(HttpStatus.NOT_FOUND);
-        }
-
-        return res.json(item);
-    }
-
-    async get(req, res) {
-        let items;
-        let {query} = req;
-
-        try {
-            items = await this.service.get(query);
-        } catch (e) {
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        if (!items) {
-            return res.sendStatus(HttpStatus.BAD_REQUEST);
-        }
-
-        return res.json(items);
-    }
-
-    async create(req, res) {
-        const {body} = req;
-        try {
-            await this.service.create(body)
-        } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
-        }
-
-        return res.sendStatus(HttpStatus.CREATED);
-    }
-    
-    async update(req, res) {
-        const {body, params} = req;
-        const {id} = params;
-
-        try {
-            await this.service.update(id, body);
-        } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
-        }
-
-        return res.sendStatus(HttpStatus.NO_CONTENT);
-    }
-
-    async replace(req, res) {
-        const {body, params} = req;
-        const {id} = params;
-
-        try {
-            await this.service.update(id, body);
-        } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
-        }
-
-        return res.sendStatus(HttpStatus.NO_CONTENT);
-    }
-
-    async delete(req, res) {
-        const {id} = req.params;
-        try {
-            await this.service.delete(id);
-        } catch (e) {
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return res.sendStatus(HttpStatus.NO_CONTENT);
-    }
+    //If you get an entity, return with this helper method.
+    return this.sendEntity(res, entity, options);
 }
 ```
+
+#### Adding extra links to a Restful Route.
+The `Router` has the ability to get a specific route metadata which can be used for a variety of purposes. The Router is able to get a route from the config and pass it where it is needed. The route can be found by name - which requires adding a `name` value to the routes config, or by using the action - the name of the function in the controller.
+
+This can be used to append extra data that can be used for execution and formatting.
+
+The `RestfulController` has a new method `getLinks` which, using the routing config, will return all the extra links that can be passed to the `links` option - if you are using the `HATEAOSFormatter` - in the `sendEntity` and `sendCollection` helper methods.
+
+To get started, take a restful route and add the links. The link path is relative and `HATEAOSFormatter` can format it for you if `formatted` is false - it is by default.
+
+```javascript
+{
+    "arguments": ["id"],
+    "methods": ["get"],
+    "path": "resource",
+    "controller": "controllers.resource",
+    "action": "getOne",
+    "links": [
+        {"label": "subresources", "link": "subresources", "formatted": false}
+    ]
+},
+```
+
+This will add an extra link "subresouces" which will point to the resource's respective subresources.
 
 ## Policies
 Policies let you regulate routing for authentication or permissions-based reasons. This allows you to write authentication code in one place, use it in the router and not have to burden the rest of the codebase with it.

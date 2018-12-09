@@ -30,6 +30,14 @@ export default class Router {
         return this.strategy.prepareRoutes(routes);
     }
 
+    getRoute(routeName) {
+        return Object.values(this.routes).filter(({ name }) => routeName === name);
+    }
+
+    getRouteByAction(controllerName, actionName) {
+        return Object.values(this.routes).filter(({ controller, action }) => controllerName === controller.constructor.name && actionName === action);
+    }
+
     /**
      * @static
      * @params Variable number of strings
