@@ -19,8 +19,9 @@ export default class ResponseFormatter {
      * 
      * @param {Response} response 
      * @param {Object} content 
+     * @param {Object} options 
      */
-    send(response, content) {
+    send(response, content, options) {
         return response.json(content);
     }
 }

@@ -46,4 +46,12 @@ export default class Controller {
         status = status || HttpStatus.MOVED_PERMANENTLY;
         return res.redirect(status, path);
     }
+
+    getRoute(name) {
+        return this.router.getRoute(name);
+    }
+
+    getRouteByAction(action) {
+        return this.router.getRouteByAction(this.constructor.name, action);
+    }
 }
