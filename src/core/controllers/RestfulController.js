@@ -35,7 +35,7 @@ export default class RestfulController extends Controller {
             return res.sendStatus(HttpStatus.NOT_FOUND);
         }
 
-        return this.formatter.send(res, this.formatter.formatEntity(item));
+        return this.sendEntity(res, item, {links: this.getLinks('getOne')});
     }
 
     /**
@@ -59,7 +59,7 @@ export default class RestfulController extends Controller {
             return res.sendStatus(HttpStatus.BAD_REQUEST);
         }
 
-        return this.formatter.send(res, this.formatter.formatCollection(items));
+        return this.sendCollection(res, items, {links: this.getLinks('get')});
     }
 
     /**
@@ -136,5 +136,28 @@ export default class RestfulController extends Controller {
         }
 
         return res.sendStatus(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * 
+     * @param {Object} res 
+     * @param {Entity} item 
+     */
+    sendEntity(res, item, options) {
+        return this.formatter.send(res, this.formatter.formatEntity(item), options);
+    }
+
+    /**
+     * 
+     * @param {Object} res 
+     * @param {Collection} collection 
+     */
+    sendCollection(res, collection, options) {
+        return this.formatter.send(res, this.formatter.formatCollection(collection), options);
+    }
+
+    getLinks(action) {
+        let [route = {}] = this.getRouteByAction(action);
+        return route.links;
     }
 }
