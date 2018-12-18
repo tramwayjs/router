@@ -31,11 +31,18 @@ export default class Router {
     }
 
     getRoute(routeName) {
-        return Object.values(this.routes).filter(({ name }) => routeName === name);
+        let routes = Object.values(this.routes).filter(({ name }) => routeName === name);
+        return routes[0];
     }
 
     getRouteByAction(controllerName, actionName) {
-        return Object.values(this.routes).filter(({ controller, action }) => controllerName === controller.constructor.name && actionName === action);
+        let routes = Object.values(this.routes).filter(({ controller, action }) => controllerName === controller.constructor.name && actionName === action);
+        return routes[0];
+    }
+
+    buildPath(...parts) {
+        parts = parts.filter(a => a).map(part => part.replace(/^\/+|\/+$/gm,''));
+        return parts.join('/');
     }
 
     /**

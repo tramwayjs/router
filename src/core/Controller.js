@@ -52,6 +52,22 @@ export default class Controller {
     }
 
     getRouteByAction(action) {
-        return this.router.getRouteByAction(this.constructor.name, action);
+        let route = this.router.getRouteByAction(this.constructor.name, action);
+
+        if (!route) {
+            let parent = Object.getPrototypeOf(this.constructor);
+            if (parent) {
+                return this.router.getRouteByAction(parent.name, action);
+            }
+        }
+
+        return route;
+    }
+    
+    getHostFromRequest(req) {
+        const {protocol} = req;
+        const hostname = req.get('host');
+        
+        return this.router.buildPath(`${protocol}://${hostname}`)
     }
 }
