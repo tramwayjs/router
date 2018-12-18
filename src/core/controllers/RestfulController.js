@@ -165,7 +165,7 @@ export default class RestfulController extends Controller {
     }
 
     getLinks(action) {
-        let [route = {}] = this.getRouteByAction(action);
-        return route.links;
+        let route = this.getRouteByAction(action);
+        return route && route.links;
     }
 }
