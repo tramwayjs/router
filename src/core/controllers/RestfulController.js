@@ -71,13 +71,21 @@ export default class RestfulController extends Controller {
      */
     async create(req, res) {
         const {body} = req;
+        let item;
+        
         try {
-            await this.service.create(body)
+            item = await this.service.create(body)
         } catch (e) {
             return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
-        return res.sendStatus(HttpStatus.CREATED);
+        let route = this.getRouteByAction('get');
+        let {path} = route;
+
+        let base = this.getHostFromRequest(req);
+        let location = this.router.buildPath(base, path, item.getId());
+
+        return res.location(location).sendStatus(HttpStatus.CREATED);
     }
     
     /**
