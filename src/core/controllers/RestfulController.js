@@ -8,10 +8,11 @@ import { HttpStatus } from "../../index";
  * @extends {Controller}
  */
 export default class RestfulController extends Controller {
-    constructor(router, service, formatter) {
+    constructor(router, service, formatter, logger) {
         super(router);
         this.service = service;
         this.formatter = formatter || new ResponseFormatter();
+        this.logger = logger;
     }
 
     /**
@@ -28,10 +29,12 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.getOne(id);
         } catch(e) {
+            this.logger && this.logger.error(e);
             return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!item) {
+            this.logger && this.logger.info(`${this.constructor.name} - No item found for id: ${id}`);
             return res.sendStatus(HttpStatus.NOT_FOUND);
         }
 
@@ -52,10 +55,12 @@ export default class RestfulController extends Controller {
         try {
             items = await this.service.get(query);
         } catch (e) {
+            this.logger && this.logger.error(e);
             return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (!items) {
+            this.logger && this.logger.info(`${this.constructor.name} - No items found`);
             return res.sendStatus(HttpStatus.BAD_REQUEST);
         }
 
@@ -76,6 +81,7 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.create(body)
         } catch (e) {
+            this.logger && this.logger.error(e);
             return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
@@ -102,6 +108,7 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
+            this.logger && this.logger.error(e);
             return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
@@ -122,6 +129,7 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
+            this.logger && this.logger.error(e);
             return res.status(HttpStatus.BAD_REQUEST).json(e);
         }
 
@@ -140,6 +148,7 @@ export default class RestfulController extends Controller {
         try {
             await this.service.delete(id);
         } catch (e) {
+            this.logger && this.logger.error(e);
             return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
