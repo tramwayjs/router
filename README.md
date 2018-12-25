@@ -34,7 +34,7 @@ Here's a sample routes file. The order of routes matters and is preserved by the
 import MainController from "../controllers/MainController";
 import SecuredController from "../controllers/SecuredController";
 import StandardAuthenticationPolicy from "../policies/StandardAuthenticationPolicy";
-import TestRestController from '../controllers/TestRestController';
+import TestController from '../controllers/TestController';
 let standardAuthenticationStrategy = new StandardAuthenticationPolicy();
 const routesValues = [
     {
@@ -43,8 +43,8 @@ const routesValues = [
         "action": "index"
     },
     {
-        "path": "/model",
-        "controller": new TestRestController(),
+        "path": "/test",
+        "controller": new TestController(),
         "arguments": ["id"],
         "restful": true
     },
@@ -98,12 +98,12 @@ let standardAuthenticationStrategy = new StandardAuthenticationPolicy();
 const routesValues = [
     {
         "methods": ["get"],
-        "controller": "controllers.main",
+        "controller": "controller.main",
         "action": "index"
     },
     {
         "path": "/model",
-        "controller": "controllers.test_rest",
+        "controller": "controller.test",
         "arguments": ["id"],
         "restful": true
     },
@@ -111,30 +111,51 @@ const routesValues = [
         "path": "/hello",
         "arguments": ["name"],
         "methods": ["get"],
-        "controller": "controllers.main",
+        "controller": "controller.main",
         "action": "sayHello"
     },
     {
         "path": "/secure",
         "methods": ["get"],
-        "controller": "controllers.secured",
+        "controller": "controller.secured",
         "action": "index",
         "policy": "policy.standard_authentication"
     },
     {
         "arguments": ["name"],
         "methods": ["get"],
-        "controller": "controllers.main",
+        "controller": "controller.main",
         "action": "sayHello"
     },
     {
         "arguments": ["name"],
         "methods": ["post", "put"],
-        "controller": "controllers.main",
+        "controller": "controller.main",
         "action": "postTest"
     }
 ];
 export default routesValues;
+```
+
+A fully-implemented Controller will have the following dependency injection configuration:
+
+```javascript
+import {
+    TestRestController,
+} from '../../controllers';
+
+export default {
+    "controller.test": {
+        "class": TestController,
+        "constructor": [
+            {"type": "service", "key": "router"},
+            {"type": "service", "key": "service.test"},
+            {"type": "service", "key": "service.formatter"},
+            {"type": "service", "key": "logger"},
+        ],
+        "functions": []
+    },
+}
 ```
 
 ## Router
@@ -329,9 +350,11 @@ import {controllers} from 'tramway-core-router';
 import {Service} from '../services';
 const {RestfulController} = controllers;
 
-export default class TestRestController extends RestfulController {
-    constructor(router, service) {
+export default class TestController extends RestfulController {
+    constructor(router, service, formatter, logger) {
         super(router, service);
+        this.formatter = formatter;
+        this.logger = logger;
     }
 }
 ```
