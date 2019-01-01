@@ -89,7 +89,7 @@ export default class RestfulController extends Controller {
         let {path} = route;
 
         let base = this.getHostFromRequest(req);
-        let location = this.router.buildPath(base, path, item.getId());
+        let location = this.router.buildPath(base, path, `${item.getId()}`);
 
         return res.location(location).sendStatus(HttpStatus.CREATED);
     }
