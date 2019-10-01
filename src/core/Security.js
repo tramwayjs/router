@@ -18,7 +18,11 @@ export default class Security {
             try {
                 result = await authentication.check(req);
             } catch (e) {
-                return res.redirect(HttpStatus.UNAUTHORIZED, authenticationPolicy.getRedirectRoute());
+                if (authenticationPolicy.getRedirectRoute()) {
+                    return res.redirect(HttpStatus.UNAUTHORIZED, authenticationPolicy.getRedirectRoute());
+                }
+
+                return res.sendStatus(HttpStatus.UNAUTHORIZED);
             }
 
             res.locals = result;
