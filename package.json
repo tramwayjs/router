@@ -1,30 +1,29 @@
 {
   "name": "tramway-core-router",
-  "version": "3.6.2",
+  "version": "3.7.0",
   "description": "An extendable router for the tramway-core framework",
   "author": "Julian Wolfe",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/tramwayjs/tramway-core-router.git"
+    "url": "https://github.com/tramwayjs/router.git"
   },
   "bugs": {
-    "url": "https://gitlab.com/tramwayjs/tramway-core-router/issues?label_name%5B%5D=bug"
+    "url": "https://github.com/tramwayjs/router/labels/bug"
   },
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run compile",
-    "compile": "NODE_ENV=production ./node_modules/.bin/tramway build",
-    "test": "npm run compile && ./node_modules/.bin/mocha tests"
+    "prepublish": "npm run build",
+    "build": "NODE_ENV=production ./node_modules/.bin/tramway build",
+    "test": "npm run build && ./node_modules/.bin/mocha tests"
   },
   "devDependencies": {
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-flow-strip-types": "^6.14.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-es2015-node6": "^0.4.0",
-    "babel-preset-react-app": "^3.1.2",
-    "mocha": "^3.2.0",
-    "tramway": "^0.3.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/plugin-transform-flow-strip-types": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "mocha": "^7.0.0",
+    "tramway": "^0.5.1",
     "tramway-core-testsuite": "1.1.0"
   },
   "dependencies": {
