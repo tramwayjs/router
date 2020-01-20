@@ -29,8 +29,8 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.getOne(id);
         } catch(e) {
-            this.logger && this.logger.error(e);
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: e.message, stack: e.stack});
         }
 
         if (!item) {
@@ -55,8 +55,8 @@ export default class RestfulController extends Controller {
         try {
             items = await this.service.get(query);
         } catch (e) {
-            this.logger && this.logger.error(e);
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: e.message, stack: e.stack});
         }
 
         if (!items) {
@@ -81,8 +81,8 @@ export default class RestfulController extends Controller {
         try {
             item = await this.service.create(body)
         } catch (e) {
-            this.logger && this.logger.error(e);
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.BAD_REQUEST).json({message: e.message, stack: e.stack});
         }
 
         let route = this.getRouteByAction('get');
@@ -108,8 +108,8 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            this.logger && this.logger.error(e);
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.BAD_REQUEST).json({message: e.message, stack: e.stack});
         }
 
         return res.sendStatus(HttpStatus.NO_CONTENT);
@@ -129,8 +129,8 @@ export default class RestfulController extends Controller {
         try {
             await this.service.update(id, body);
         } catch (e) {
-            this.logger && this.logger.error(e);
-            return res.status(HttpStatus.BAD_REQUEST).json(e);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.BAD_REQUEST).json({message: e.message, stack: e.stack});
         }
 
         return res.sendStatus(HttpStatus.NO_CONTENT);
@@ -148,8 +148,8 @@ export default class RestfulController extends Controller {
         try {
             await this.service.delete(id);
         } catch (e) {
-            this.logger && this.logger.error(e);
-            return res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger && this.logger.error(e.stack);
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: e.message, stack: e.stack});
         }
 
         return res.sendStatus(HttpStatus.NO_CONTENT);
