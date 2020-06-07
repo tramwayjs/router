@@ -1,11 +1,12 @@
 import {AbstractMethodError} from '../errors';
+import Policy from './Policy';
 
 /**
  * @abstract
  * @export
  * @class AuthenticationStrategy
  */
-export default class AuthenticationStrategy {
+export default class AuthenticationStrategy extends Policy {
     /**
      * Creates an instance of AuthenticationStrategy.
      * @param {string} redirectRoute
@@ -13,6 +14,7 @@ export default class AuthenticationStrategy {
      * @memberOf AuthenticationStrategy
      */
     constructor(redirectRoute) {
+        super();
         this.redirectRoute = redirectRoute;
     }
 
@@ -28,13 +30,6 @@ export default class AuthenticationStrategy {
      * @memberOf AuthenticationStrategy
      */
     async logout(request){
-        throw new AbstractMethodError();
-    }
-
-    /**
-     * @memberOf AuthenticationStrategy
-     */
-    async check(request){
         throw new AbstractMethodError();
     }
 
