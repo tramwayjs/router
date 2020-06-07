@@ -14,6 +14,7 @@ export default class AuthenticationStrategy extends Policy {
      * @memberOf AuthenticationStrategy
      */
     constructor(redirectRoute) {
+        super();
         this.redirectRoute = redirectRoute;
     }
 
