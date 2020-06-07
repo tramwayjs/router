@@ -1,3 +1,7 @@
 import AuthenticationStrategy from './AuthenticationStrategy';
+import Policy from './Policy';
 
-export {AuthenticationStrategy};
+export {
+    AuthenticationStrategy,
+    Policy,
+}

@@ -9,6 +9,7 @@ import * as controllers from './core/controllers';
 import * as entities from './core/entities';
 import * as policies from './core/policies';
 import * as strategies from './core/router/strategies';
+import * as errors from './core/errors';
 
 export {
     Router, 
@@ -21,4 +22,5 @@ export {
     entities, 
     policies, 
     strategies,
+    errors,
 };

@@ -442,6 +442,39 @@ let {AuthenticationStrategy} = policies;
 
 If a policy is indicated with the route, it will call the framework's internal Security service which will return a result based on the check performed by the Authentication service using the Authentication strategy - which uses strategy pattern. It's at this point where the router will redirect with a 401 to the policy's redirect route if the strategy's check criteria fails.
 
+A Policy can also be a basic Policy which provides a guard for a particular Controller action. For instance, you developed a REST API and you have a sub-resource, a policy can be created to ensure the parent exists.
+
+```javascript
+import {policies, errors} from 'tramway-core-router';
+
+const { Policy } = policies;
+const { HttpNotFoundError, HttpInternalServerError } = errors;
+
+export default class ParentPolicy extends Policy {
+    constructor(service, logger) {
+        this.service = service;
+        this.logger = logger;
+    }
+
+    async check(request) {
+        let item;
+
+        try {
+            item = this.service.getOne(request.parentId);
+        } catch(e) {
+            this.logger.error(e.stack);
+            throw new HttpInternalServerError();
+        }
+
+        if (!item) {
+            throw new HttpNotFoundError();
+        }
+
+        return {item};
+    }
+}
+```
+
 ## Formatters
 Formatters let you standardize the format of responses and could support different content headers. 
 
@@ -470,3 +503,17 @@ export default class CustomResponseFormatter extends ResponseFormatter {
     }
 }
 ```
+
+## Http Errors
+
+The `HttpError` object can be used to communicate Http errors with Tramway. Policies will now take `HttpError` into account when responding to an exception thrown within a `Policy`. A policy will still return an unauthorized response by default for backwards compatibility on its initial security-driven use case.
+
+The following `HttpError` objects are available with the library. Others can be added to the library or constructed using `HttpStatus`.
+
+| Object | Status Code |
+| --- | --- |
+| HttpBadRequestError | 400 |
+| HttpUnauthorizedError | 401 |
+| HttpForbiddenError | 403 |
+| HttpNotFoundError | 404 |
+| HttpInternalServerError | 500 |
