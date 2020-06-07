@@ -1,6 +1,7 @@
 import Authentication from "./Authentication";
 import {AuthenticationStrategy} from "./policies";
 import { HttpStatus } from "../index";
+import { HttpError } from "./errors";
 
 /**
  * @export
@@ -18,6 +19,10 @@ export default class Security {
             try {
                 result = await authentication.check(req);
             } catch (e) {
+                if (e instanceof HttpError) {
+                    return res.status(e.getStatusCode()).send(e.getMessage());
+                }
+
                 if (authenticationPolicy.getRedirectRoute()) {
                     return res.redirect(HttpStatus.UNAUTHORIZED, authenticationPolicy.getRedirectRoute());
                 }
